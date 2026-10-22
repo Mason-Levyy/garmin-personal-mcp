@@ -1,102 +1,94 @@
 import asyncio
 import datetime
+import json
 
 import pytest
-from garmin_personal_api import HttpError
+from conftest import FakeClient
 
-from garmin_personal_mcp import cli, garmin, server
-
-
-class RecordingClient:
-    def __init__(self):
-        self.calls = []
-
-    def __getattr__(self, name):
-        def record(*args, **kwargs):
-            self.calls.append((name, args, kwargs))
-            if name == "get_daily_hrv":
-                raise HttpError(
-                    status_code=404, method="GET", url="/hrv", response_text=""
-                )
-            return {"endpoint": name}
-
-        return record
+from garmin_personal_mcp import activities, garmin_client, server
 
 
 @pytest.fixture
 def client(monkeypatch):
-    fake = RecordingClient()
-    monkeypatch.setattr(garmin, "call", lambda op: op(fake))
+    fake = FakeClient({"search/activities": [], "dailySleep": {"sleepTimeSeconds": 1}})
+    monkeypatch.setattr(garmin_client, "call", lambda op: op(fake))
     return fake
 
 
-def test_parse_range_defaults_to_last_seven_days():
+def tools():
+    return asyncio.run(server.mcp.list_tools())
+
+
+def test_parse_day_explains_the_expected_format():
+    with pytest.raises(ValueError, match="YYYY-MM-DD"):
+        server.parse_day("10/20/2026")
+
+
+def test_parse_range_defaults_to_the_week_ending_today():
     first, last = server.parse_range(None, "2026-10-21")
     assert (first, last) == (datetime.date(2026, 10, 15), datetime.date(2026, 10, 21))
 
 
-def test_parse_range_rejects_inverted_range():
-    with pytest.raises(ValueError):
+def test_parse_range_rejects_an_inverted_range():
+    with pytest.raises(ValueError, match="swap"):
         server.parse_range("2026-10-22", "2026-10-21")
 
 
-def test_get_day_collects_every_section(client):
-    record = asyncio.run(server.garmin_get_day("2026-10-21"))
-    assert record["date"] == "2026-10-21"
-    assert record["summary"] == {"endpoint": "get_daily_summaries"}
-    assert "404" in record["hrv"]["error"]
-    assert set(record) == {"date", *server.day_sections(datetime.date.today())}
+def test_every_endpoint_has_a_tool():
+    assert len(tools()) == 27
 
 
-def test_activities_without_dates_lists_most_recent(client):
-    asyncio.run(server.garmin_activities(limit=5, offset=10))
-    assert client.calls == [
-        (
-            "search_activities",
-            (),
-            {
-                "start": 10,
-                "limit": 5,
-                "start_date": None,
-                "end_date": None,
-                "activity_type": None,
-            },
-        )
-    ]
+def test_tools_are_read_only_except_the_local_download():
+    writers = [tool.name for tool in tools() if not tool.annotations.readOnlyHint]
+    assert writers == ["garmin_download_activity"]
 
 
-def test_range_tool_passes_parsed_dates(client):
-    asyncio.run(server.garmin_hrv("2026-10-01", "2026-10-21"))
-    assert client.calls == [
-        (
-            "get_daily_hrv_summaries",
-            (datetime.date(2026, 10, 1), datetime.date(2026, 10, 21)),
-            {},
-        )
-    ]
+def test_every_tool_is_described():
+    assert all(tool.description and tool.title for tool in tools())
 
 
-def test_raw_get_requires_absolute_path(client):
-    with pytest.raises(ValueError):
-        asyncio.run(server.garmin_get("@evil.example/steal"))
+def test_no_data_is_explained(client):
+    result = asyncio.run(server.garmin_get_hrv("2026-10-20"))
+    assert result == server.NO_DATA
+
+
+def test_tool_returns_garmin_data(client):
+    assert asyncio.run(server.garmin_get_sleep("2026-10-20")) == {"sleepTimeSeconds": 1}
+
+
+def test_list_results_are_wrapped_so_empty_ones_still_render(client):
+    [content] = asyncio.run(server.mcp.call_tool("garmin_search_activities", {}))
+    assert json.loads(content.text) == {"results": []}
+
+
+def test_search_without_dates_lists_the_most_recent(client):
+    asyncio.run(server.garmin_search_activities(limit=5))
+    [(path, params)] = client.calls
+    assert "startDate" not in params
+    assert params["limit"] == 5
+
+
+def test_search_with_only_an_end_date_uses_the_week_before_it(client):
+    asyncio.run(server.garmin_search_activities(end="2026-10-21", favorite=True))
+    [(path, params)] = client.calls
+    assert params["startDate"] == "2026-10-15"
+    assert params["favorite"] == 1
+
+
+def test_search_rejects_a_partial_bounding_box(client):
+    with pytest.raises(activities.ActivitySearchError):
+        asyncio.run(server.garmin_search_activities(north=40.0))
     assert client.calls == []
 
 
-def test_raw_get_forwards_path_and_params(client):
-    asyncio.run(server.garmin_get("/hrv-service/hrv/2026-10-21", {"a": "b"}))
-    assert client.calls == [
-        ("get", ("/hrv-service/hrv/2026-10-21",), {"params": {"a": "b"}})
-    ]
+def test_download_defaults_to_the_configured_directory(client, monkeypatch, tmp_path):
+    monkeypatch.setenv("GARMIN_MCP_DOWNLOAD_DIR", str(tmp_path / "fits"))
+    saved = {}
 
+    def fake_download(c, activity_id, directory):
+        saved["directory"] = directory
+        return {}
 
-def test_every_tool_is_read_only():
-    tools = asyncio.run(server.mcp.list_tools())
-    assert len(tools) == 14
-    assert all(tool.annotations.readOnlyHint for tool in tools)
-
-
-def test_transport_security_accepts_extra_host_with_any_port():
-    settings = cli.transport_security(["familiar-v1.example.ts.net"])
-    assert "familiar-v1.example.ts.net:*" in settings.allowed_hosts
-    assert "127.0.0.1:*" in settings.allowed_hosts
-    assert "https://familiar-v1.example.ts.net:*" in settings.allowed_origins
+    monkeypatch.setattr(activities, "download_activity", fake_download)
+    asyncio.run(server.garmin_download_activity(123))
+    assert saved["directory"] == tmp_path / "fits"

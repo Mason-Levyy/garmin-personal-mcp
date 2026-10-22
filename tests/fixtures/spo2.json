@@ -1,0 +1,19 @@
+{
+  "userProfilePK": 1000001,
+  "calendarDate": "2026-10-20",
+  "averageSpO2": 96.0,
+  "lowestSpO2": 89,
+  "lastSevenDaysAvgSpO2": 95.6,
+  "latestSpO2": 97,
+  "avgSleepSpO2": 95.0,
+  "spO2SingleValuesDescriptorList": [
+    {"spo2ValueDescriptorIndex": 0, "spo2ValueDescriptorKey": "timestamp"},
+    {"spo2ValueDescriptorIndex": 1, "spo2ValueDescriptorKey": "spo2Reading"}
+  ],
+  "spO2SingleValues": [[1792483200000, 96], [1792483260000, 95]],
+  "spO2HourlyAveragesDescriptorList": [
+    {"spo2AcclimationDescriptorIndex": 0, "spo2AcclimationDescriptorKey": "timestamp"},
+    {"spo2AcclimationDescriptorIndex": 1, "spo2AcclimationDescriptorKey": "average"}
+  ],
+  "spO2HourlyAverages": [[1792483200000, 96]]
+}

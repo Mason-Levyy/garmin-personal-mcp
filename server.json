@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Mason-Levyy/garmin-personal-mcp",
+  "title": "Garmin Connect",
+  "description": "Garmin Connect on Garmin's official Personal API: sleep, HRV, body battery, activities.",
+  "repository": {
+    "url": "https://github.com/Mason-Levyy/garmin-personal-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "garmin-personal-mcp",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GARMIN_PERSONAL_API_KEY",
+          "description": "Garmin Connect Personal API key (optional; 'garmin-personal-mcp auth' saves one instead)",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "GARMIN_MCP_DOWNLOAD_DIR",
+          "description": "Where garmin_download_activity saves activity files",
+          "isRequired": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

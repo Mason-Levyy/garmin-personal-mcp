@@ -1,0 +1,77 @@
+name: Bug report
+description: Something is broken or behaves unexpectedly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. **Redact your API key, bearer tokens, display name,
+        user ids, and personal health data** from anything you paste below.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+      placeholder: |
+        Asked Claude "how did I sleep last night?". Expected last night's sleep score;
+        instead garmin_get_sleep returned HTTP 400.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. `uvx garmin-personal-mcp auth`
+        2. Call `garmin_get_sleep` with ...
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output / logs
+      description: Server stderr, the MCP client's error, or a traceback. Redact keys and tokens.
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: garmin-personal-mcp version
+      description: "`uvx garmin-personal-mcp --version`"
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How is it installed?
+      options:
+        - uvx garmin-personal-mcp
+        - pip / uv in a virtualenv
+        - From a git checkout
+    validations:
+      required: true
+  - type: dropdown
+    id: transport
+    attributes:
+      label: Transport
+      options:
+        - stdio (default)
+        - HTTP (--http)
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, MCP client (Claude Desktop, Claude Code, other), Garmin device
+      placeholder: "macOS 15, Python 3.13, Claude Desktop, Forerunner 965"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: "`garmin-personal-mcp auth --check` reports the key works"
+        - label: I checked the README's Troubleshooting section
+        - label: I have removed keys, tokens, and personal data from this report
+          required: true

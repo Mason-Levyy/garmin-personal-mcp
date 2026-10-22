@@ -1,21 +1,57 @@
 [project]
 name = "garmin-personal-mcp"
 version = "0.1.0"
-description = "Read-only MCP server for your own Garmin Connect data via Garmin's official Personal API"
+description = "MCP server for Garmin Connect on Garmin's official Personal API: sleep, HRV, body battery, activities, and more from any MCP client"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
 authors = [{ name = "Mason Levy" }]
+keywords = [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "garmin",
+    "garmin-connect",
+    "garmin-api",
+    "personal-api",
+    "sleep",
+    "hrv",
+    "body-battery",
+    "fitness",
+    "health",
+    "claude",
+    "claude-desktop",
+    "claude-code",
+    "ai-agents",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Utilities",
+]
 dependencies = [
     "mcp>=1.10,<2",
     "garmin-connect-personal-api-python>=1,<2",
+    "platformdirs>=4",
 ]
+
+[project.urls]
+Repository = "https://github.com/Mason-Levyy/garmin-personal-mcp"
+Changelog = "https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/CHANGELOG.md"
+Issues = "https://github.com/Mason-Levyy/garmin-personal-mcp/issues"
 
 [project.scripts]
 garmin-personal-mcp = "garmin_personal_mcp.cli:main"
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.16"]
+dev = ["pytest>=8", "ruff>=0.16", "pre-commit>=4"]
 
 [build-system]
 requires = ["hatchling"]
@@ -33,5 +69,12 @@ line-length = 88
 extend-exclude = [".venv*"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # bugbear
+]
+# Formatter handles line length; long string literals and URLs are fine.
 ignore = ["E501"]
