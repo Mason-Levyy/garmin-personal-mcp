@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A Claude Code plugin in `plugin/`, installable with
+  `/plugin install garmin-personal-mcp --marketplace Mason-Levyy/garmin-personal-mcp`.
+  It asks for the Personal API key at install, so no `auth` step is needed.
+- One-click install buttons for Cursor, VS Code, and VS Code Insiders, and
+  setup commands for Codex CLI and Gemini CLI.
+
 ## [0.1.0] - 2026-10-22
 
 ### Added

@@ -1,0 +1,23 @@
+{
+  "name": "garmin-personal-mcp",
+  "displayName": "Garmin Personal MCP",
+  "version": "0.1.0",
+  "description": "Ask Claude about your Garmin Connect data (sleep, HRV, Body Battery, stress, activities, weight) through Garmin's official, read-only Personal API.",
+  "author": {
+    "name": "Mason Levy",
+    "url": "https://github.com/Mason-Levyy"
+  },
+  "homepage": "https://github.com/Mason-Levyy/garmin-personal-mcp",
+  "repository": "https://github.com/Mason-Levyy/garmin-personal-mcp",
+  "license": "MIT",
+  "keywords": ["garmin", "garmin-connect", "sleep", "hrv", "body-battery", "fitness", "health"],
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "Garmin Personal API key",
+      "description": "Create one in Garmin Connect under Settings, Personal API (https://connect.garmin.com/app/settings/personalApiToken). Garmin shows it once.",
+      "sensitive": true,
+      "required": true
+    }
+  }
+}
