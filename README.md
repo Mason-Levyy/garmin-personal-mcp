@@ -1,6 +1,8 @@
 <div align="center">
 
-# garmin-personal-mcp
+<img src="https://raw.githubusercontent.com/Mason-Levyy/garmin-personal-mcp/main/assets/logo.png" alt="" width="120">
+
+# Garmin MCP
 
 **Ask your AI about your Garmin data, on Garmin's official API.**
 
