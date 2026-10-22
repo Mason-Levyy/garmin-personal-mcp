@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-22
+
 ### Added
 
 - A Claude Code plugin in `plugin/`, installable with
@@ -42,5 +44,6 @@ All notable changes to this project are documented here. The format follows
 - Streamable HTTP transport (`--http`), with `--allowed-host` for running
   behind a reverse proxy.
 
-[Unreleased]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Mason-Levyy/garmin-personal-mcp/releases/tag/v0.1.0
