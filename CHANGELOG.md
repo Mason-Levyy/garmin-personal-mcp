@@ -15,6 +15,11 @@ All notable changes to this project are documented here. The format follows
   setup commands for Codex CLI and Gemini CLI.
 - A logo in `assets/`, shown at the top of the README.
 
+### Fixed
+
+- `auth` and `auth --check` say Garmin couldn't be reached, instead of
+  crashing with a traceback, when there's no connection or a proxy blocks it.
+
 ## [0.1.0] - 2026-10-22
 
 ### Added

@@ -7,6 +7,8 @@ from garmin_personal_api import GarminPersonalApiError
 
 from . import config, garmin_client, profile
 
+UNREACHABLE_HINT = "Check your internet connection or proxy, then try again."
+
 
 def save_key(key: str) -> Path:
     path = config.key_file()
@@ -48,6 +50,14 @@ def run_auth_flow() -> int:
     except (GarminPersonalApiError, garmin_client.ApiKeyError) as exc:
         print(f"Garmin didn't accept that key, so it wasn't saved: {exc}")
         return 1
+    # requests' connection errors and timeouts subclass OSError, and Garmin's
+    # client lets them through unwrapped.
+    except OSError as exc:
+        print(
+            f"Couldn't reach Garmin to check the key ({type(exc).__name__}), so it "
+            f"wasn't saved. {UNREACHABLE_HINT}"
+        )
+        return 1
     path = save_key(key)
     print(f"Connected to Garmin Connect. Key saved to {path} (owner-only permissions).")
     if os.environ.get(config.KEY_ENV_VAR):
@@ -63,6 +73,9 @@ def run_check() -> int:
         verify()
     except (GarminPersonalApiError, garmin_client.ApiKeyError) as exc:
         print(f"Not connected: {exc}")
+        return 1
+    except OSError as exc:
+        print(f"Couldn't reach Garmin ({type(exc).__name__}). {UNREACHABLE_HINT}")
         return 1
     print("Connected to Garmin Connect.")
     return 0
