@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "garmin": {
+      "command": "uvx",
+      "args": ["garmin-personal-mcp==0.1.0"],
+      "env": {
+        "GARMIN_PERSONAL_API_KEY": "${user_config.api_key}"
+      }
+    }
+  }
+}
