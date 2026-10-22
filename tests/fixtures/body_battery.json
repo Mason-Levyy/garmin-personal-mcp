@@ -1,0 +1,17 @@
+[
+  {
+    "date": "2026-10-20",
+    "charged": 61,
+    "drained": 58,
+    "startTimestampLocal": "2026-10-20T00:00:00.0",
+    "endTimestampLocal": "2026-10-20T23:59:59.0",
+    "bodyBatteryValueDescriptorDTOList": [
+      {"bodyBatteryValueDescriptorIndex": 0, "bodyBatteryValueDescriptorKey": "timestamp"},
+      {"bodyBatteryValueDescriptorIndex": 1, "bodyBatteryValueDescriptorKey": "bodyBatteryLevel"}
+    ],
+    "bodyBatteryValuesArray": [[1792483200000, 34], [1792483380000, 35]],
+    "bodyBatteryActivityEvent": [
+      {"eventType": "SLEEP", "eventStartTimeGmt": "2026-10-20T05:10:00.0", "bodyBatteryImpact": 52}
+    ]
+  }
+]

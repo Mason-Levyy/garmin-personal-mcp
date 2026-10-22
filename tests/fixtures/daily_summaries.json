@@ -1,0 +1,10 @@
+{
+  "data": [
+    {
+      "calendarDate": "2026-10-20",
+      "source": "DEVICE",
+      "movement": {"steps": 9120, "distanceMeters": 7034},
+      "heartRate": {"restingValue": 52, "minValue": 47, "maxValue": 151}
+    }
+  ]
+}

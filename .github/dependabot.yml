@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    labels: ["dependencies"]
+
+  # Reads pyproject.toml; uv.lock is intentionally not committed.
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    labels: ["dependencies"]
+    # Majors are bumped by hand after a run against a real account; nothing in
+    # CI exercises the network, so a green CI proves nothing about them.
+    ignore:
+      - dependency-name: mcp
+        update-types: ["version-update:semver-major"]
+      - dependency-name: garmin-connect-personal-api-python
+        update-types: ["version-update:semver-major"]

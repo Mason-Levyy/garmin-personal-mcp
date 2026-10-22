@@ -1,0 +1,88 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    paths: ["pyproject.toml"]
+  release:
+    types: [published]
+
+jobs:
+  # On a push to main, tag+release iff pyproject.toml's version is new (i.e.
+  # this push was a version bump, not some other change that happened to
+  # touch pyproject.toml). The `release` trigger runs when a human cuts a
+  # release by hand instead. Either way, `publish` below does the real work.
+  tag-release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      created: ${{ steps.tag.outputs.created }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - id: version
+        run: |
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - id: tag
+        run: |
+          if git rev-parse "refs/tags/v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.tag.outputs.created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            --title "v${{ steps.version.outputs.version }}" \
+            --generate-notes
+
+  publish:
+    needs: [tag-release]
+    if: always() && (github.event_name == 'release' || needs.tag-release.outputs.created == 'true')
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'push' && format('v{0}', needs.tag-release.outputs.version) || github.ref }}
+      - uses: astral-sh/setup-uv@v7
+      - run: uv build
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Wait for the new version to appear on PyPI
+        run: |
+          VERSION="${{ github.event_name == 'push' && needs.tag-release.outputs.version || '' }}"
+          if [ -z "$VERSION" ]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          for _ in $(seq 1 30); do
+            if curl -sf "https://pypi.org/pypi/garmin-personal-mcp/$VERSION/json" >/dev/null; then
+              echo "garmin-personal-mcp $VERSION is live on PyPI"
+              exit 0
+            fi
+            echo "waiting for PyPI to publish $VERSION..."
+            sleep 10
+          done
+          echo "timed out waiting for PyPI"
+          exit 1
+
+      - name: Install mcp-publisher
+        run: curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Publish to the MCP Registry
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish

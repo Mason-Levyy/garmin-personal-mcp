@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same branch/PR.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - run: uv run --only-group dev ruff check --output-format github .
+      - run: uv run --only-group dev ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv run pytest
+
+  version-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          python3 -c "
+          import json, tomllib
+          pyproject_version = tomllib.load(open('pyproject.toml', 'rb'))['project']['version']
+          server = json.load(open('server.json'))
+          versions = {pyproject_version, server['version'], server['packages'][0]['version']}
+          assert len(versions) == 1, f'version mismatch: pyproject.toml={pyproject_version!r} server.json={server[\"version\"]!r}/{server[\"packages\"][0][\"version\"]!r}'
+          "
