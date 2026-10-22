@@ -46,11 +46,6 @@ SINGLE_REQUEST_CASES = [
         {"includeAll": "false"},
     ),
     (
-        lambda c: weight.get_weigh_ins(c, *WEEK),
-        "/weight-service/weight/all/2026-10-14/2026-10-20",
-        None,
-    ),
-    (
         lambda c: weight.get_weight_goals(c, *WEEK),
         "/goal-service/goal/user/effective/weightgoal/2026-10-14/2026-10-20",
         None,

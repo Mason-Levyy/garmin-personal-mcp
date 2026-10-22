@@ -19,7 +19,10 @@ Garmin Connect, and the client exchanges it for 24-hour bearer tokens. The
 Personal API is read-only and pull-only, so this server never writes to
 Garmin. The endpoint reference is the
 [Swagger page](https://developer.garmin.com/gc-developer-program/personal/swagger-docs/);
-every endpoint on it has a tool.
+every endpoint on it has a tool except `/weight-service/weight/all`, which
+answered HTTP 400 with an empty body for every range (including days with a
+weigh-in) when tested on 2026-10-22. `garmin_get_weight(include_all=True)`
+returns the same entries; add a tool if Garmin fixes it.
 
 ## Commands
 

@@ -101,8 +101,9 @@ async def garmin_get_daily_summaries(
 ) -> dict:
     """Daily wellness summaries across a date range, grouped per day (movement,
     calories, heart rate, intensity minutes, stress, body battery, hydration,
-    respiration, pulse ox, jet lag). Best tool for trends over weeks or
-    months.
+    respiration, pulse ox, jet lag). About 1-2 KB per day, so for a long
+    trend in one metric prefer garmin_get_steps, garmin_get_stress, or
+    garmin_get_sleep_summaries.
 
     start, end: YYYY-MM-DD inclusive (default: the 7 days ending today). Ranges
     over a year are fetched in yearly requests.
@@ -269,30 +270,18 @@ async def garmin_get_weight(
     start: str | None = None, end: str | None = None, include_all: bool = False
 ) -> dict:
     """Daily weight summaries over a range, the range average, and the nearest
-    weigh-ins before and after it. Weights are in grams; body composition
+    weigh-ins before and after it (handy when the range itself has none). Weights are in grams; body composition
     (BMI, body fat %, muscle and bone mass) appears when a smart scale
     recorded it.
 
     start, end: YYYY-MM-DD inclusive (default: the 7 days ending today).
-    include_all: list every weigh-in per day, not just the latest.
+    include_all: list every weigh-in per day with its time and body
+    composition, not just the latest.
     """
     first, last = parse_range(start, end)
     return await fetch(
         lambda c: weight.get_weight(c, first, last, include_all=include_all)
     )
-
-
-@mcp.tool(title="Get weigh-ins", annotations=READS_GARMIN)
-async def garmin_get_weigh_ins(
-    start: str | None = None, end: str | None = None
-) -> dict:
-    """Every individual weigh-in in a range with its timestamp, body
-    composition, and change from the previous one. Weights are in grams.
-
-    start, end: YYYY-MM-DD inclusive (default: the 7 days ending today).
-    """
-    first, last = parse_range(start, end)
-    return await fetch(lambda c: weight.get_weigh_ins(c, first, last))
 
 
 @mcp.tool(title="Get weight goals", annotations=READS_GARMIN)
@@ -368,7 +357,7 @@ async def garmin_search_activities(
     min_bottom_time: int | None = None,
     max_bottom_time: int | None = None,
     required_fields: list[str] | None = None,
-    limit: int = 20,
+    limit: int = 10,
     offset: int = 0,
 ) -> dict:
     """Recorded activities (runs, rides, swims, strength, dives, ...), newest
@@ -396,7 +385,7 @@ async def garmin_search_activities(
     Dives: min_/max_max_depth (centimeters), deco_dive, min_/max_bottom_time
     (seconds).
     required_fields: activity fields that must be present, e.g. avgPower.
-    limit, offset: page through results.
+    limit, offset: page through results (each activity is about 3-4 KB).
     """
     first, last = None, None
     if start is not None or end is not None:
