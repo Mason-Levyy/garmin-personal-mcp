@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/Mason-Levyy/garmin-personal-mcp/main/assets/logo.png" alt="" width="120">
 
-# garmin-personal-mcp
+# Garmin MCP
 
 **Ask your AI about your Garmin data, on Garmin's official API.**
 
