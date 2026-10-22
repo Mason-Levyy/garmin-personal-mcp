@@ -19,7 +19,8 @@ All notable changes to this project are documented here. The format follows
   fitness age, and menstrual cycle data, plus `garmin_get_day` for a one-day
   overview.
 - `garmin-personal-mcp auth` saves a Personal API key after checking it with
-  Garmin; `auth --check` reports whether the saved key still works.
+  Garmin (or reads it from stdin when there's no terminal); `auth --check`
+  reports whether the saved key still works.
 - Ranges longer than an endpoint's documented limit are split into requests
   automatically.
 - All-day sample arrays are left out by default (`include_samples` or `chunks`

@@ -19,8 +19,29 @@ def garmin(monkeypatch):
     return seen
 
 
+class Stdin:
+    def __init__(self, text, tty):
+        self.text = text
+        self.tty = tty
+
+    def isatty(self):
+        return self.tty
+
+    def readline(self):
+        return self.text
+
+
 def paste(monkeypatch, value):
+    monkeypatch.setattr(auth.sys, "stdin", Stdin("", tty=True))
     monkeypatch.setattr(auth.getpass, "getpass", lambda prompt: value)
+
+
+def pipe(monkeypatch, text):
+    def no_prompt(prompt):
+        raise AssertionError("getpass needs a terminal")
+
+    monkeypatch.setattr(auth.sys, "stdin", Stdin(text, tty=False))
+    monkeypatch.setattr(auth.getpass, "getpass", no_prompt)
 
 
 def test_save_key_is_owner_only():
@@ -36,6 +57,21 @@ def test_auth_verifies_then_saves(monkeypatch, garmin, capsys):
     assert garmin == ["good-key"]
     assert config.key_file().read_text() == "good-key\n"
     assert "Connected" in capsys.readouterr().out
+
+
+def test_piped_key_is_read_without_a_terminal(monkeypatch, garmin):
+    pipe(monkeypatch, "good-key\n")
+    assert auth.run_auth_flow() == 0
+    assert config.key_file().read_text() == "good-key\n"
+
+
+def test_no_terminal_and_nothing_piped_explains_instead_of_crashing(
+    monkeypatch, garmin, capsys
+):
+    pipe(monkeypatch, "")
+    assert auth.run_auth_flow() == 1
+    assert "pipe the key in" in capsys.readouterr().out
+    assert garmin == []
 
 
 def test_rejected_key_is_not_saved(monkeypatch, garmin):
