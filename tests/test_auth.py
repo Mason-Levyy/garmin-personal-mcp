@@ -96,3 +96,25 @@ def test_auth_warns_when_env_var_shadows_the_file(monkeypatch, garmin, capsys):
 def test_check_reports_connection(garmin, capsys):
     assert auth.run_check() == 0
     assert "Connected" in capsys.readouterr().out
+
+
+def test_unreachable_garmin_explains_and_saves_nothing(monkeypatch, capsys):
+    def offline(api_key=None):
+        raise ConnectionError("proxy refused the tunnel")
+
+    monkeypatch.setattr(auth, "verify", offline)
+    paste(monkeypatch, "good-key")
+    assert auth.run_auth_flow() == 1
+    assert not config.key_file().exists()
+    output = capsys.readouterr().out
+    assert "Couldn't reach Garmin" in output
+    assert "didn't accept" not in output
+
+
+def test_check_reports_unreachable_garmin(monkeypatch, capsys):
+    def offline(api_key=None):
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(auth, "verify", offline)
+    assert auth.run_check() == 1
+    assert "Couldn't reach Garmin" in capsys.readouterr().out
