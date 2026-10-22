@@ -13,6 +13,7 @@ All notable changes to this project are documented here. The format follows
   It asks for the Personal API key at install, so no `auth` step is needed.
 - One-click install buttons for Cursor, VS Code, and VS Code Insiders, and
   setup commands for Codex CLI and Gemini CLI.
+- A logo in `assets/`, shown at the top of the README.
 
 ## [0.1.0] - 2026-10-22
 
