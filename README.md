@@ -10,6 +10,10 @@
 [![GitHub stars](https://img.shields.io/github/stars/Mason-Levyy/garmin-personal-mcp?style=flat&logo=github)](https://github.com/Mason-Levyy/garmin-personal-mcp/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/LICENSE)
 
+[![Install in Cursor](https://img.shields.io/badge/Cursor-Install_Server-000000?style=flat-square&logo=cursor&logoColor=white)](https://cursor.com/en/install-mcp?name=garmin&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJnYXJtaW4tcGVyc29uYWwtbWNwIl19)
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522garmin%2522%252C%2522command%2522%253A%2522uvx%2522%252C%2522args%2522%253A%255B%2522garmin-personal-mcp%2522%255D%257D)
+[![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522garmin%2522%252C%2522command%2522%253A%2522uvx%2522%252C%2522args%2522%253A%255B%2522garmin-personal-mcp%2522%255D%257D)
+
 [Quickstart](#quickstart) · [Tools](#tools) · [Authentication](#authentication) · [Changelog](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/CHANGELOG.md)
 
 </div>
@@ -53,7 +57,8 @@ API for individuals. This server uses it:
    uvx garmin-personal-mcp auth
    ```
 
-2. Add the server to your client.
+2. Add the server to your client. The install buttons at the top do this in
+   one click for Cursor and VS Code.
 
    **Claude Code**
 
@@ -61,7 +66,15 @@ API for individuals. This server uses it:
    claude mcp add garmin -- uvx garmin-personal-mcp
    ```
 
-   **Claude Desktop** (`claude_desktop_config.json`)
+   Or install it as a plugin, which asks for your key in place of step 1:
+
+   ```
+   /plugin install garmin-personal-mcp --marketplace Mason-Levyy/garmin-personal-mcp
+   ```
+
+   **Claude Desktop** (`claude_desktop_config.json`), **Cursor**
+   (`~/.cursor/mcp.json`), **Windsurf** (`~/.codeium/windsurf/mcp_config.json`),
+   and **Cline** (`cline_mcp_settings.json`) all take the same entry:
 
    ```json
    {
@@ -74,11 +87,38 @@ API for individuals. This server uses it:
    }
    ```
 
+   <details>
+   <summary><b>VS Code, Codex CLI, Gemini CLI</b></summary>
+
+   VS Code (or use the button above):
+
+   ```bash
+   code --add-mcp '{"name":"garmin","command":"uvx","args":["garmin-personal-mcp"]}'
+   ```
+
+   Codex CLI:
+
+   ```bash
+   codex mcp add garmin -- uvx garmin-personal-mcp
+   ```
+
+   Gemini CLI:
+
+   ```bash
+   gemini mcp add garmin uvx garmin-personal-mcp
+   ```
+
+   </details>
+
 3. Ask it something: *"how did I sleep last night?"*, *"is my HRV trending
    down this month?"*, *"compare my last three long runs"*.
 
 Requires [uv](https://docs.astral.sh/uv/). Any MCP client that speaks stdio or
 streamable HTTP works, not just Claude.
+
+> **Finding this useful?** A ⭐ on
+> [GitHub](https://github.com/Mason-Levyy/garmin-personal-mcp) helps other
+> Garmin users find it.
 
 ## Authentication
 
@@ -226,6 +266,14 @@ Issues and pull requests are welcome, especially when Garmin adds endpoints to
 the Personal API. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, style, and
 the PR checklist, and [SECURITY.md](SECURITY.md) for how to report
 vulnerabilities privately. Release history is in [CHANGELOG.md](CHANGELOG.md).
+
+## Support the project
+
+If this server saves you time, please
+[star the repo](https://github.com/Mason-Levyy/garmin-personal-mcp). Stars are
+how other Garmin users find it in GitHub search and MCP directories. Bug
+reports and endpoint requests are just as welcome in
+[issues](https://github.com/Mason-Levyy/garmin-personal-mcp/issues).
 
 ## License
 

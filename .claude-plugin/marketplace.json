@@ -1,0 +1,14 @@
+{
+  "name": "garmin-personal-mcp",
+  "owner": {
+    "name": "Mason Levy",
+    "url": "https://github.com/Mason-Levyy"
+  },
+  "plugins": [
+    {
+      "name": "garmin-personal-mcp",
+      "source": "./plugin",
+      "description": "Garmin Connect in Claude Code on Garmin's official, read-only Personal API: sleep, HRV, Body Battery, activities, and more."
+    }
+  ]
+}
