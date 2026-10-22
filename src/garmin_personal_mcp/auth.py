@@ -1,5 +1,6 @@
 import getpass
 import os
+import sys
 from pathlib import Path
 
 from garmin_personal_api import GarminPersonalApiError
@@ -21,14 +22,26 @@ def verify(api_key: str | None = None) -> None:
     garmin_client.call(profile.get_settings, api_key=api_key)
 
 
-def run_auth_flow() -> int:
+def read_key() -> str:
+    """Without a terminal (a pipe, or a shell an agent runs), getpass can't
+    hide input and raises EOFError, so read one line from stdin instead."""
+    if not sys.stdin.isatty():
+        return sys.stdin.readline().strip()
     print(
         "Create a Garmin Connect Personal API key (it is shown only once):\n"
-        f"  {garmin_client.KEY_PAGE}\n"
+        f"  {garmin_client.KEY_PAGE}\n",
+        flush=True,
     )
-    key = getpass.getpass("Paste the key (input is hidden): ").strip()
+    return getpass.getpass("Paste the key (input is hidden): ").strip()
+
+
+def run_auth_flow() -> int:
+    key = read_key()
     if not key:
-        print("No key entered; nothing saved.")
+        print(
+            "No key entered; nothing saved. Run `garmin-personal-mcp auth` in a "
+            "terminal, or pipe the key in on stdin."
+        )
         return 1
     try:
         verify(key)

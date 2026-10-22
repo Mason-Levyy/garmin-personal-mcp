@@ -89,6 +89,9 @@ streamable HTTP works, not just Claude.
    server checks it with Garmin before saving it to
    `~/.config/garmin/connect-personal-api-key` with owner-only permissions.
 
+Where there's no terminal to prompt in (a script, or a shell an agent runs),
+pipe the key in instead, e.g. `pbpaste | garmin-personal-mcp auth`.
+
 `garmin-personal-mcp auth --check` reports whether the saved key still works,
 without prompting. Garmin emails you about a week before a key expires: create
 a new one and run `auth` again. No restart is needed; the server reads the key
