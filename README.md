@@ -164,7 +164,7 @@ DNS-rebinding check accepts its Host header.
 
 - **"Garmin rejected the Personal API key"**: the key expired or was deleted.
   Create a new one and run `garmin-personal-mcp auth`.
-- **"No personal API key was provided"**: run `garmin-personal-mcp auth`, or
+- **"No usable Garmin Personal API key was found"**: run `garmin-personal-mcp auth`, or
   set `GARMIN_PERSONAL_API_KEY` in the client config.
 - **`{"no_data": ...}`**: Garmin has nothing for that date yet (today's HRV
   before you've slept, for example), or your device doesn't record that

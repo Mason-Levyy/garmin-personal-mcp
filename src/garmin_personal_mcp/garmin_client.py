@@ -29,6 +29,11 @@ def bearer_token(
 ) -> str:
     try:
         key = resolve_api_key(api_key)
+    except GarminPersonalApiError as exc:
+        raise ApiKeyError(
+            f"No usable Garmin Personal API key was found. {RECONNECT_HINT}"
+        ) from exc
+    try:
         token = authenticator.obtain_token(key, force_refresh=force_refresh)
     except HttpError as exc:
         if exc.status_code not in KEY_REJECTED_STATUSES:

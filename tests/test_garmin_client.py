@@ -94,8 +94,10 @@ def test_token_server_errors_are_not_blamed_on_the_key(authenticator):
 
 def test_missing_key_explains_how_to_fix(authenticator, monkeypatch):
     monkeypatch.delenv("GARMIN_PERSONAL_API_KEY")
-    with pytest.raises(garmin_client.ApiKeyError, match="personalApiToken"):
+    with pytest.raises(garmin_client.ApiKeyError, match="personalApiToken") as error:
         garmin_client.call(lambda c: None)
+    assert "garmin-personal-mcp auth" in str(error.value)
+    assert "--api-key" not in str(error.value)
 
 
 def test_unusable_token_explains_how_to_fix(authenticator):
