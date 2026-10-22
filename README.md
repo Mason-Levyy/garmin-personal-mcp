@@ -6,7 +6,8 @@
 
 [![PyPI](https://img.shields.io/pypi/v/garmin-personal-mcp?color=0a64e6)](https://pypi.org/project/garmin-personal-mcp/)
 [![CI](https://github.com/Mason-Levyy/garmin-personal-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Mason-Levyy/garmin-personal-mcp/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/pypi/pyversions/garmin-personal-mcp)](https://pypi.org/project/garmin-personal-mcp/)
+[![Python](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FMason-Levyy%2Fgarmin-personal-mcp%2Fmain%2Fpyproject.toml)](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/pyproject.toml)
+[![GitHub stars](https://img.shields.io/github/stars/Mason-Levyy/garmin-personal-mcp?style=flat&logo=github)](https://github.com/Mason-Levyy/garmin-personal-mcp/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/LICENSE)
 
 [Quickstart](#quickstart) · [Tools](#tools) · [Authentication](#authentication) · [Changelog](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/CHANGELOG.md)
