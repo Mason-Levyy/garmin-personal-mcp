@@ -35,7 +35,7 @@ def test_parse_range_rejects_an_inverted_range():
 
 
 def test_every_endpoint_has_a_tool():
-    assert len(tools()) == 27
+    assert len(tools()) == 26
 
 
 def test_tools_are_read_only_except_the_local_download():

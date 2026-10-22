@@ -10,13 +10,12 @@ def garmin(monkeypatch):
     accepted = {"good-key"}
     seen = []
 
-    def display_name(api_key=None):
+    def verify(api_key=None):
         seen.append(api_key)
         if api_key is not None and api_key not in accepted:
             raise garmin_client.ApiKeyError("Garmin rejected the Personal API key")
-        return "runner42"
 
-    monkeypatch.setattr(auth, "display_name", display_name)
+    monkeypatch.setattr(auth, "verify", verify)
     return seen
 
 
@@ -36,7 +35,7 @@ def test_auth_verifies_then_saves(monkeypatch, garmin, capsys):
     assert auth.run_auth_flow() == 0
     assert garmin == ["good-key"]
     assert config.key_file().read_text() == "good-key\n"
-    assert "runner42" in capsys.readouterr().out
+    assert "Connected" in capsys.readouterr().out
 
 
 def test_rejected_key_is_not_saved(monkeypatch, garmin):
@@ -60,4 +59,4 @@ def test_auth_warns_when_env_var_shadows_the_file(monkeypatch, garmin, capsys):
 
 def test_check_reports_connection(garmin, capsys):
     assert auth.run_check() == 0
-    assert "runner42" in capsys.readouterr().out
+    assert "Connected" in capsys.readouterr().out

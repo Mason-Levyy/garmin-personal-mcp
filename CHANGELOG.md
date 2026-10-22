@@ -11,9 +11,9 @@ All notable changes to this project are documented here. The format follows
 ### Added
 
 - First release: an MCP server for Garmin Connect on Garmin's official
-  Personal API, with a tool for every endpoint in Garmin's reference (27
-  tools): daily summaries, steps, stress, hydration, Body Battery, heart rate,
-  SpO2, wellness activities, sleep, HRV, weight, weigh-ins, weight goals, the
+  Personal API, with a tool for every working endpoint in Garmin's reference
+  (26 tools): daily summaries, steps, stress, hydration, Body Battery, heart
+  rate, SpO2, wellness activities, sleep, HRV, weight, weight goals, the
   nutrition log, activity search with every documented filter, activity
   detail, workouts, and file download, profile settings, heart rate zones,
   fitness age, and menstrual cycle data, plus `garmin_get_day` for a one-day

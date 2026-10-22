@@ -12,9 +12,5 @@ def get_weight(
     )
 
 
-def get_weigh_ins(client, start: datetime.date, end: datetime.date) -> list | None:
-    return client.get(f"/weight-service/weight/all/{start}/{end}")
-
-
 def get_weight_goals(client, start: datetime.date, end: datetime.date) -> dict | None:
     return client.get(f"/goal-service/goal/user/effective/weightgoal/{start}/{end}")

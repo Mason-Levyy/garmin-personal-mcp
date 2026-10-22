@@ -35,8 +35,8 @@ API for individuals. This server uses it:
 
 - **No password, no scraping**: a revocable Personal API key you create in
   Garmin Connect, exchanged for short-lived tokens
-- **The whole Personal API**: every endpoint in Garmin's reference has a tool,
-  with every documented filter
+- **The whole Personal API**: every working endpoint in Garmin's reference
+  has a tool, with every documented filter
 - **Any date range**: ranges longer than an endpoint allows (28 days for
   steps, 31 for sleep, and so on) are split into requests for you
 - **Model-sized responses**: all-day sample arrays are left out unless you ask
@@ -119,8 +119,7 @@ today. Tools that return a list wrap it as `{"results": [...]}`.
 | `garmin_get_sleep_summaries` | Nightly sleep records across a range |
 | `garmin_get_hrv` | One night of HRV with every reading |
 | `garmin_get_hrv_summaries` | Nightly HRV, weekly average, baseline, and status across a range |
-| `garmin_get_weight` | Daily weight summaries, range average, and adjacent weigh-ins |
-| `garmin_get_weigh_ins` | Every weigh-in with body composition |
+| `garmin_get_weight` | Daily weight summaries, range average, and adjacent weigh-ins; every weigh-in with `include_all` |
 | `garmin_get_weight_goals` | Weight goals in effect and their target ranges |
 | `garmin_get_food_log` | Garmin Connect nutrition log: foods, nutrients, goals, meals |
 | `garmin_search_activities` | Activities with every filter Garmin supports (type, dates, distance, power, area, dives, ...) |

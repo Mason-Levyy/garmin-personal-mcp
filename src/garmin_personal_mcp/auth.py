@@ -17,9 +17,8 @@ def save_key(key: str) -> Path:
     return path
 
 
-def display_name(api_key: str | None = None) -> str:
-    settings = garmin_client.call(profile.get_settings, api_key=api_key) or {}
-    return settings.get("displayName") or "your Garmin account"
+def verify(api_key: str | None = None) -> None:
+    garmin_client.call(profile.get_settings, api_key=api_key)
 
 
 def run_auth_flow() -> int:
@@ -32,12 +31,12 @@ def run_auth_flow() -> int:
         print("No key entered; nothing saved.")
         return 1
     try:
-        name = display_name(key)
+        verify(key)
     except (GarminPersonalApiError, garmin_client.ApiKeyError) as exc:
         print(f"Garmin didn't accept that key, so it wasn't saved: {exc}")
         return 1
     path = save_key(key)
-    print(f"Connected to {name}. Key saved to {path} (owner-only permissions).")
+    print(f"Connected to Garmin Connect. Key saved to {path} (owner-only permissions).")
     if os.environ.get(config.KEY_ENV_VAR):
         print(
             f"Note: {config.KEY_ENV_VAR} is set and takes precedence over the "
@@ -48,9 +47,9 @@ def run_auth_flow() -> int:
 
 def run_check() -> int:
     try:
-        name = display_name()
+        verify()
     except (GarminPersonalApiError, garmin_client.ApiKeyError) as exc:
         print(f"Not connected: {exc}")
         return 1
-    print(f"Connected to {name}.")
+    print("Connected to Garmin Connect.")
     return 0
