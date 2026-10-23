@@ -17,14 +17,6 @@ body:
     validations:
       required: true
   - type: textarea
-    id: endpoint
-    attributes:
-      label: Personal API endpoint (if known)
-      description: |
-        If this needs an endpoint from Garmin's Personal API reference, paste its path,
-        parameters, and response shape. **Redact keys, tokens, and user ids.**
-      render: http
-  - type: textarea
     id: alternatives
     attributes:
       label: Alternatives considered
