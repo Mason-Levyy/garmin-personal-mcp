@@ -1,12 +1,22 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Mason-Levyy/garmin-personal-mcp",
-  "title": "Garmin Connect",
+  "title": "Garmin Personal MCP",
   "description": "Garmin Connect on Garmin's official Personal API: sleep, HRV, body battery, activities.",
   "repository": {
     "url": "https://github.com/Mason-Levyy/garmin-personal-mcp",
     "source": "github"
   },
+  "websiteUrl": "https://github.com/Mason-Levyy/garmin-personal-mcp#readme",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/Mason-Levyy/garmin-personal-mcp/main/assets/logo.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "400x400"
+      ]
+    }
+  ],
   "version": "0.1.1",
   "packages": [
     {
