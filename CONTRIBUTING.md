@@ -116,6 +116,24 @@ fails if they drift), move the
 `main`. The publish workflow tags `vX.Y.Z`, creates a GitHub release, publishes
 to PyPI via trusted publishing, and pushes to the MCP Registry.
 
+Docker images are published separately by `.github/workflows/docker.yml` on
+every push to `main`, using the built-in `GITHUB_TOKEN`. The image name is
+`ghcr.io/<owner>/<repository>` in lowercase, so forks publish to their own
+namespace. `latest` tracks `main`; `sha-<full-commit-sha>` identifies the source
+commit. Pull requests build the image without logging in or publishing.
+
+For releases, `publish.yml` calls the same Docker workflow with the release
+tag. It publishes `X.Y.Z` and the source commit's SHA tag from `vX.Y.Z`,
+without moving `latest`. This handles both automatic version bumps and
+manually published releases; the tag must match the package version. The
+direct call is needed because releases created with `GITHUB_TOKEN` do not
+trigger another release workflow. Docker and PyPI publishing run independently
+after the release is created.
+
+After the first publish, make the package public in GitHub's package settings
+to allow pulls without authentication; [new GHCR packages default to
+private](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#pushing-container-images).
+
 ## License
 
 By contributing you agree that your contributions are licensed under the

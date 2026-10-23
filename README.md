@@ -149,6 +149,110 @@ Instead of the key file you can set `GARMIN_PERSONAL_API_KEY`, which takes
 precedence. The key file and bearer-token cache are the same ones Garmin's
 `gc-personal` CLI uses, so a key saved by either works for both.
 
+## Docker
+
+From a clone of this repository, build the image without installing Python or
+uv on the host:
+
+```bash
+docker build -t garmin-personal-mcp .
+```
+
+The [Docker workflow](.github/workflows/docker.yml) builds pull requests and
+publishes images on pushes to `main` at
+`ghcr.io/<owner>/garmin-personal-mcp`, with the owner name in lowercase.
+Images support Linux amd64 and arm64 and are tagged `latest` and
+`sha-<full-commit-sha>`. The release workflow also publishes version tags such
+as `0.1.2` from the corresponding `v0.1.2` Git tag. `latest` continues to
+track `main`. Once published, use that image name and tag in place of
+`garmin-personal-mcp` in the commands below to skip the local build.
+
+For stdio, export `GARMIN_PERSONAL_API_KEY` in the shell that starts the client,
+then run:
+
+```bash
+docker run --rm -i -e GARMIN_PERSONAL_API_KEY garmin-personal-mcp
+```
+
+For an MCP client that accepts a JSON server configuration, use:
+
+```json
+{
+  "mcpServers": {
+    "garmin": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-e", "GARMIN_PERSONAL_API_KEY", "garmin-personal-mcp"]
+    }
+  }
+}
+```
+
+The client process must inherit the exported variable for Docker to pass it
+through; GUI clients may not inherit your shell environment. To use a saved key
+instead, enter it once in an interactive terminal:
+
+```bash
+docker run --rm -it -v garmin-config:/home/garmin/.config/garmin garmin-personal-mcp auth
+```
+
+Reuse the volume for subsequent runs:
+
+```bash
+docker run --rm -i -v garmin-config:/home/garmin/.config/garmin garmin-personal-mcp
+```
+
+Replace the
+`-e GARMIN_PERSONAL_API_KEY` pair in the JSON args with `-v` and
+`garmin-config:/home/garmin/.config/garmin` to use this setup in a client.
+You can run `auth --check` with the same volume to check the saved key. Use
+`-it` only for interactive authentication; stdio MCP requires `-i` without
+`-t`.
+
+To keep activity downloads, mount a named volume at
+`/home/garmin/Downloads/garmin`:
+
+```bash
+docker run --rm -i -e GARMIN_PERSONAL_API_KEY -v garmin-downloads:/home/garmin/Downloads/garmin garmin-personal-mcp
+```
+
+A writable host-directory mount at the same path also works; its permissions
+must allow the container user to write. Download tool results contain
+container paths, and files disappear when a `--rm` container exits unless you
+mount storage.
+
+For streamable HTTP on the host's loopback interface:
+
+```bash
+docker run --rm -e GARMIN_PERSONAL_API_KEY -p 127.0.0.1:8491:8491 garmin-personal-mcp --http --host 0.0.0.0
+```
+
+The endpoint is `http://127.0.0.1:8491/mcp`. HTTP has no client
+authentication; see [Remote / HTTP mode](#remote--http-mode) for the security
+and proxy guidance, including `--allowed-host`.
+
+### Docker Compose
+
+The included [compose.yaml](compose.yaml) builds the image, runs HTTP on
+`http://127.0.0.1:8491/mcp`, and persists authentication, the token cache, and
+activity downloads in named volumes. From the repository directory, save
+your key once and start the service:
+
+```bash
+docker compose build
+docker compose run --rm garmin auth
+docker compose up -d
+```
+
+Alternatively, export `GARMIN_PERSONAL_API_KEY` before running
+`docker compose up --build -d` and skip the interactive auth step. The
+exported key takes precedence over the saved key; leave the variable unset
+to use the saved key.
+
+Use `docker compose logs -f garmin` to view logs and `docker compose down`
+to stop the service. Named volumes survive `down`; adding `--volumes`
+deletes the saved authentication and downloads. Compose uses its own
+project-scoped volumes, separate from the plain `docker run` examples above.
+
 ## Tools
 
 All tools take dates as `YYYY-MM-DD`. Range tools default to the 7 days ending

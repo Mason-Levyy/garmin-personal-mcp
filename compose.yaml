@@ -1,0 +1,16 @@
+services:
+  garmin:
+    build: .
+    command: ["--http", "--host", "0.0.0.0"]
+    environment:
+      - GARMIN_PERSONAL_API_KEY
+    ports:
+      - "127.0.0.1:8491:8491"
+    volumes:
+      - garmin-config:/home/garmin/.config/garmin
+      - garmin-downloads:/home/garmin/Downloads/garmin
+    restart: unless-stopped
+
+volumes:
+  garmin-config:
+  garmin-downloads:
