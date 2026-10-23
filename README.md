@@ -151,79 +151,44 @@ precedence. The key file and bearer-token cache are the same ones Garmin's
 
 ## Docker Compose
 
-Run the server as a background HTTP service with Docker Compose, then connect
-an MCP client to its URL. Named volumes keep authentication, the token cache,
-and activity downloads across container restarts and updates.
-
-Once an image has been published, save this as `compose.yaml`:
-
-```yaml
-services:
-  garmin:
-    image: ghcr.io/mason-levyy/garmin-personal-mcp:latest
-    command: ["--http", "--host", "0.0.0.0"]
-    environment:
-      - GARMIN_PERSONAL_API_KEY
-    ports:
-      - "127.0.0.1:8491:8491"
-    volumes:
-      - garmin-config:/home/garmin/.config/garmin
-      - garmin-downloads:/home/garmin/Downloads/garmin
-    restart: unless-stopped
-
-volumes:
-  garmin-config:
-  garmin-downloads:
-```
-
-For an image published from a fork, replace `mason-levyy` with the fork owner's
-name in lowercase. Images support Linux amd64 and arm64. `latest` tracks
-`main`; use a published version such as `0.1.2`, or `sha-<full-commit-sha>`, to
-select a specific build.
-
-From the directory containing `compose.yaml`, pull the image, save your
-Personal API key at the interactive prompt, and start the service:
+Use [compose.yaml](compose.yaml) in the repository root to run the server as
+a background HTTP service. From the repository directory, build the image:
 
 ```bash
-docker compose pull
-docker compose run --rm garmin auth
-docker compose up -d
+docker compose build
 ```
 
-Authentication is a one-time setup. Alternatively, export
-`GARMIN_PERSONAL_API_KEY` before starting Compose and skip the `auth` command.
-The exported key takes precedence over the saved key; leave it unset to use
-the saved key. Run `docker compose run --rm garmin auth --check` to check
-that authentication works, or rerun `auth` to save a replacement key.
+Choose **one** of these authentication options:
+
+### 1. Add your API key to a `.env` file
+
+Create `.env` next to `compose.yaml` and add your Personal API key:
+
+```dotenv
+GARMIN_PERSONAL_API_KEY='your-personal-api-key'
+```
+
+Compose loads this file automatically. You do not need to run `auth`.
+
+### 2. Use the interactive `auth` command
+
+Leave `GARMIN_PERSONAL_API_KEY` unset in your shell and `.env`, then run:
+
+```bash
+docker compose run --rm garmin auth
+```
+
+Paste your Personal API key at the prompt. It is saved for subsequent starts.
+
+### Start the server
+
+```bash
+docker compose up -d
+```
 
 In your MCP client, add a **Streamable HTTP** server with the URL
-`http://127.0.0.1:8491/mcp`. Compose keeps the server running independently
-of the client. The port is published only on the Docker host's loopback
-interface. HTTP has no built-in authentication; for clients on other machines,
-see [Remote / HTTP mode](#remote--http-mode) for VPN and authenticated proxy
-setup, including `--allowed-host`.
-
-Use `docker compose logs -f garmin` to view logs and `docker compose down` to
-stop the service. To update a published image:
-
-```bash
-docker compose pull
-docker compose up -d
-```
-
-Named volumes survive `down`; adding `--volumes` deletes saved authentication
-and downloads. Download results contain paths inside the container. To copy
-them to the host while the service is running:
-
-```bash
-docker compose cp garmin:/home/garmin/Downloads/garmin ./garmin-downloads
-```
-
-To build from source instead, clone the repository and use its included
-[compose.yaml](compose.yaml), which uses `build: .` in place of `image:`.
-Run `docker compose build` instead of `docker compose pull`, then follow the
-same authentication and startup steps above. After pulling source changes,
-run `docker compose up --build -d` to rebuild and update the service.
+`http://127.0.0.1:8491/mcp`. For clients on other machines, see
+[Remote / HTTP mode](#remote--http-mode) for VPN and authenticated proxy setup.
 
 ## Tools
 
