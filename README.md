@@ -158,9 +158,11 @@ a background HTTP service. From the repository directory, build the image:
 docker compose build
 ```
 
+### Authentication
+
 Choose **one** of these authentication options:
 
-### 1. Add your API key to a `.env` file
+#### 1. Add your API key to a `.env` file
 
 Create `.env` next to `compose.yaml` and add your Personal API key:
 
@@ -170,7 +172,7 @@ GARMIN_PERSONAL_API_KEY='your-personal-api-key'
 
 Compose loads this file automatically. You do not need to run `auth`.
 
-### 2. Use the interactive `auth` command
+#### 2. Use the interactive `auth` command
 
 Leave `GARMIN_PERSONAL_API_KEY` unset in your shell and `.env`, then run:
 
