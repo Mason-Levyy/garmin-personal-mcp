@@ -22,7 +22,14 @@ keywords = [
     "claude",
     "claude-desktop",
     "claude-code",
+    "cursor",
     "ai-agents",
+    "garmin-mcp",
+    "wearables",
+    "stress",
+    "activities",
+    "running",
+    "quantified-self",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -43,6 +50,8 @@ dependencies = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/Mason-Levyy/garmin-personal-mcp"
+Documentation = "https://github.com/Mason-Levyy/garmin-personal-mcp#readme"
 Repository = "https://github.com/Mason-Levyy/garmin-personal-mcp"
 Changelog = "https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/CHANGELOG.md"
 Issues = "https://github.com/Mason-Levyy/garmin-personal-mcp/issues"
