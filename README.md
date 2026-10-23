@@ -151,11 +151,32 @@ precedence. The key file and bearer-token cache are the same ones Garmin's
 
 ## Docker Compose
 
-Use [compose.yaml](compose.yaml) in the repository root to run the server as
-a background HTTP service. From the repository directory, build the image:
+Run the server as a background HTTP service using the prebuilt image. Save
+this as `compose.yaml`:
+
+```yaml
+services:
+  garmin:
+    image: ghcr.io/mason-levyy/garmin-personal-mcp:latest
+    command: ["--http", "--host", "0.0.0.0"]
+    environment:
+      - GARMIN_PERSONAL_API_KEY
+    ports:
+      - "127.0.0.1:8491:8491"
+    volumes:
+      - garmin-config:/home/garmin/.config/garmin
+      - garmin-downloads:/home/garmin/Downloads/garmin
+    restart: unless-stopped
+
+volumes:
+  garmin-config:
+  garmin-downloads:
+```
+
+From the directory containing `compose.yaml`, pull the image:
 
 ```bash
-docker compose build
+docker compose pull
 ```
 
 ### Authentication
@@ -191,6 +212,22 @@ docker compose up -d
 In your MCP client, add a **Streamable HTTP** server with the URL
 `http://127.0.0.1:8491/mcp`. For clients on other machines, see
 [Remote / HTTP mode](#remote--http-mode) for VPN and authenticated proxy setup.
+
+### Build from source
+
+Clone the repository and use [compose.yaml](compose.yaml) in its root, which
+builds the image from source. From the repository directory, run:
+
+```bash
+docker compose build
+```
+
+Then follow the authentication and startup steps above. After updating the
+source, rebuild and restart with:
+
+```bash
+docker compose up --build -d
+```
 
 ## Tools
 
