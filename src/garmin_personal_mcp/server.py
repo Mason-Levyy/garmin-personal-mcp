@@ -4,7 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Literal
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
 
 from . import (
@@ -22,11 +22,14 @@ from . import (
     womens_health,
 )
 
-mcp = FastMCP("garmin")
+mcp = MCPServer("garmin")
 
-READS_GARMIN = ToolAnnotations(readOnlyHint=True, openWorldHint=True)
+READS_GARMIN = ToolAnnotations(read_only_hint=True, open_world_hint=True)
 SAVES_LOCAL_FILE = ToolAnnotations(
-    readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=True
+    read_only_hint=False,
+    destructive_hint=False,
+    idempotent_hint=True,
+    open_world_hint=True,
 )
 
 DEFAULT_SPAN_DAYS = 7

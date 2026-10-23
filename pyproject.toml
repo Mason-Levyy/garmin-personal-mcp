@@ -44,7 +44,7 @@ classifiers = [
     "Topic :: Utilities",
 ]
 dependencies = [
-    "mcp>=1.10,<3",
+    "mcp>=2.3,<3",
     "garmin-connect-personal-api-python>=1,<2",
     "platformdirs>=4",
 ]
