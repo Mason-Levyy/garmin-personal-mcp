@@ -149,109 +149,81 @@ Instead of the key file you can set `GARMIN_PERSONAL_API_KEY`, which takes
 precedence. The key file and bearer-token cache are the same ones Garmin's
 `gc-personal` CLI uses, so a key saved by either works for both.
 
-## Docker
+## Docker Compose
 
-From a clone of this repository, build the image without installing Python or
-uv on the host:
+Run the server as a background HTTP service with Docker Compose, then connect
+an MCP client to its URL. Named volumes keep authentication, the token cache,
+and activity downloads across container restarts and updates.
 
-```bash
-docker build -t garmin-personal-mcp .
+Once an image has been published, save this as `compose.yaml`:
+
+```yaml
+services:
+  garmin:
+    image: ghcr.io/mason-levyy/garmin-personal-mcp:latest
+    command: ["--http", "--host", "0.0.0.0"]
+    environment:
+      - GARMIN_PERSONAL_API_KEY
+    ports:
+      - "127.0.0.1:8491:8491"
+    volumes:
+      - garmin-config:/home/garmin/.config/garmin
+      - garmin-downloads:/home/garmin/Downloads/garmin
+    restart: unless-stopped
+
+volumes:
+  garmin-config:
+  garmin-downloads:
 ```
 
-The [Docker workflow](.github/workflows/docker.yml) builds pull requests and
-publishes images on pushes to `main` at
-`ghcr.io/<owner>/garmin-personal-mcp`, with the owner name in lowercase.
-Images support Linux amd64 and arm64 and are tagged `latest` and
-`sha-<full-commit-sha>`. The release workflow also publishes version tags such
-as `0.1.2` from the corresponding `v0.1.2` Git tag. `latest` continues to
-track `main`. Once published, use that image name and tag in place of
-`garmin-personal-mcp` in the commands below to skip the local build.
+For an image published from a fork, replace `mason-levyy` with the fork owner's
+name in lowercase. Images support Linux amd64 and arm64. `latest` tracks
+`main`; use a published version such as `0.1.2`, or `sha-<full-commit-sha>`, to
+select a specific build.
 
-For stdio, export `GARMIN_PERSONAL_API_KEY` in the shell that starts the client,
-then run:
+From the directory containing `compose.yaml`, pull the image, save your
+Personal API key at the interactive prompt, and start the service:
 
 ```bash
-docker run --rm -i -e GARMIN_PERSONAL_API_KEY garmin-personal-mcp
-```
-
-For an MCP client that accepts a JSON server configuration, use:
-
-```json
-{
-  "mcpServers": {
-    "garmin": {
-      "command": "docker",
-      "args": ["run", "--rm", "-i", "-e", "GARMIN_PERSONAL_API_KEY", "garmin-personal-mcp"]
-    }
-  }
-}
-```
-
-The client process must inherit the exported variable for Docker to pass it
-through; GUI clients may not inherit your shell environment. To use a saved key
-instead, enter it once in an interactive terminal:
-
-```bash
-docker run --rm -it -v garmin-config:/home/garmin/.config/garmin garmin-personal-mcp auth
-```
-
-Reuse the volume for subsequent runs:
-
-```bash
-docker run --rm -i -v garmin-config:/home/garmin/.config/garmin garmin-personal-mcp
-```
-
-Replace the
-`-e GARMIN_PERSONAL_API_KEY` pair in the JSON args with `-v` and
-`garmin-config:/home/garmin/.config/garmin` to use this setup in a client.
-You can run `auth --check` with the same volume to check the saved key. Use
-`-it` only for interactive authentication; stdio MCP requires `-i` without
-`-t`.
-
-To keep activity downloads, mount a named volume at
-`/home/garmin/Downloads/garmin`:
-
-```bash
-docker run --rm -i -e GARMIN_PERSONAL_API_KEY -v garmin-downloads:/home/garmin/Downloads/garmin garmin-personal-mcp
-```
-
-A writable host-directory mount at the same path also works; its permissions
-must allow the container user to write. Download tool results contain
-container paths, and files disappear when a `--rm` container exits unless you
-mount storage.
-
-For streamable HTTP on the host's loopback interface:
-
-```bash
-docker run --rm -e GARMIN_PERSONAL_API_KEY -p 127.0.0.1:8491:8491 garmin-personal-mcp --http --host 0.0.0.0
-```
-
-The endpoint is `http://127.0.0.1:8491/mcp`. HTTP has no client
-authentication; see [Remote / HTTP mode](#remote--http-mode) for the security
-and proxy guidance, including `--allowed-host`.
-
-### Docker Compose
-
-The included [compose.yaml](compose.yaml) builds the image, runs HTTP on
-`http://127.0.0.1:8491/mcp`, and persists authentication, the token cache, and
-activity downloads in named volumes. From the repository directory, save
-your key once and start the service:
-
-```bash
-docker compose build
+docker compose pull
 docker compose run --rm garmin auth
 docker compose up -d
 ```
 
-Alternatively, export `GARMIN_PERSONAL_API_KEY` before running
-`docker compose up --build -d` and skip the interactive auth step. The
-exported key takes precedence over the saved key; leave the variable unset
-to use the saved key.
+Authentication is a one-time setup. Alternatively, export
+`GARMIN_PERSONAL_API_KEY` before starting Compose and skip the `auth` command.
+The exported key takes precedence over the saved key; leave it unset to use
+the saved key. Run `docker compose run --rm garmin auth --check` to check
+that authentication works, or rerun `auth` to save a replacement key.
 
-Use `docker compose logs -f garmin` to view logs and `docker compose down`
-to stop the service. Named volumes survive `down`; adding `--volumes`
-deletes the saved authentication and downloads. Compose uses its own
-project-scoped volumes, separate from the plain `docker run` examples above.
+In your MCP client, add a **Streamable HTTP** server with the URL
+`http://127.0.0.1:8491/mcp`. Compose keeps the server running independently
+of the client. The port is published only on the Docker host's loopback
+interface. HTTP has no built-in authentication; for clients on other machines,
+see [Remote / HTTP mode](#remote--http-mode) for VPN and authenticated proxy
+setup, including `--allowed-host`.
+
+Use `docker compose logs -f garmin` to view logs and `docker compose down` to
+stop the service. To update a published image:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Named volumes survive `down`; adding `--volumes` deletes saved authentication
+and downloads. Download results contain paths inside the container. To copy
+them to the host while the service is running:
+
+```bash
+docker compose cp garmin:/home/garmin/Downloads/garmin ./garmin-downloads
+```
+
+To build from source instead, clone the repository and use its included
+[compose.yaml](compose.yaml), which uses `build: .` in place of `image:`.
+Run `docker compose build` instead of `docker compose pull`, then follow the
+same authentication and startup steps above. After pulling source changes,
+run `docker compose up --build -d` to rebuild and update the service.
 
 ## Tools
 
