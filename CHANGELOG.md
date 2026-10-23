@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The README opens with what the server is, who it's for, and that it's free,
+  and the project is called Garmin Personal MCP everywhere, including the MCP
+  Registry title (was "Garmin Connect"), so directories and search engines
+  show one name.
+- `server.json` adds a website link and the logo as an icon, and PyPI gets
+  Homepage and Documentation links and more search keywords. These reach the
+  Registry and PyPI with the next release.
+
 ## [0.1.1] - 2026-10-22
 
 ### Added
