@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/Mason-Levyy/garmin-personal-mcp/main/assets/logo.png" alt="" width="120">
 
-# Garmin MCP
+# Garmin Personal MCP
 
 **Ask your AI about your Garmin data, on Garmin's official API.**
 
@@ -20,11 +20,15 @@
 
 </div>
 
-Connect Garmin Connect to Claude or any MCP client. Ask about last night's
-sleep, HRV trends, Body Battery, training load, or a specific run, all from
-your real Garmin account.
+Garmin Personal MCP is a free, open-source MCP server that connects your
+Garmin Connect account to Claude, Cursor, VS Code, or any other MCP client.
+Ask about last night's sleep, HRV trends, Body Battery, stress, training load,
+weight, or a specific run, all from your real Garmin account. It runs on
+Garmin's official Personal API with a revocable key, so it never needs your
+Garmin password, and it's read-only.
 
-Published on PyPI as [`garmin-personal-mcp`](https://pypi.org/project/garmin-personal-mcp/).
+Published on PyPI as [`garmin-personal-mcp`](https://pypi.org/project/garmin-personal-mcp/)
+and in the official MCP Registry as `io.github.Mason-Levyy/garmin-personal-mcp`.
 
 <!-- mcp-name: io.github.Mason-Levyy/garmin-personal-mcp -->
 
@@ -33,7 +37,7 @@ Published on PyPI as [`garmin-personal-mcp`](https://pypi.org/project/garmin-per
 > [Personal API](https://developer.garmin.com/gc-developer-program/personal/personal-api)
 > through [Garmin's own Python client](https://github.com/garmin/connect-personal-api-python).
 
-## Why this one?
+## How is this different from other Garmin MCP servers?
 
 Most Garmin MCP servers sign in with your Garmin password through the
 unofficial `garminconnect` library, which breaks whenever Garmin changes its
