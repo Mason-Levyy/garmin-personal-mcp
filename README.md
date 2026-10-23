@@ -6,15 +6,12 @@
 
 **Ask your AI about your Garmin data, on Garmin's official API.**
 
+[![Mason-Levyy/garmin-personal-mcp MCP server](https://glama.ai/mcp/servers/Mason-Levyy/garmin-personal-mcp/badges/score.svg)](https://glama.ai/mcp/servers/Mason-Levyy/garmin-personal-mcp)
 [![PyPI](https://img.shields.io/pypi/v/garmin-personal-mcp?color=0a64e6)](https://pypi.org/project/garmin-personal-mcp/)
 [![CI](https://github.com/Mason-Levyy/garmin-personal-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Mason-Levyy/garmin-personal-mcp/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FMason-Levyy%2Fgarmin-personal-mcp%2Fmain%2Fpyproject.toml)](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/pyproject.toml)
-[![GitHub stars](https://img.shields.io/github/stars/Mason-Levyy/garmin-personal-mcp?style=flat&logo=github)](https://github.com/Mason-Levyy/garmin-personal-mcp/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/LICENSE)
 
 [![Install in Cursor](https://img.shields.io/badge/Cursor-Install_Server-000000?style=flat-square&logo=cursor&logoColor=white)](https://cursor.com/en/install-mcp?name=garmin&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJnYXJtaW4tcGVyc29uYWwtbWNwIl19)
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522garmin%2522%252C%2522command%2522%253A%2522uvx%2522%252C%2522args%2522%253A%255B%2522garmin-personal-mcp%2522%255D%257D)
-[![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522garmin%2522%252C%2522command%2522%253A%2522uvx%2522%252C%2522args%2522%253A%255B%2522garmin-personal-mcp%2522%255D%257D)
 
 [Quickstart](#quickstart) · [Tools](#tools) · [Authentication](#authentication) · [Changelog](https://github.com/Mason-Levyy/garmin-personal-mcp/blob/main/CHANGELOG.md)
 
