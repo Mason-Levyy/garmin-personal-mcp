@@ -39,7 +39,7 @@ def test_every_endpoint_has_a_tool():
 
 
 def test_tools_are_read_only_except_the_local_download():
-    writers = [tool.name for tool in tools() if not tool.annotations.readOnlyHint]
+    writers = [tool.name for tool in tools() if not tool.annotations.read_only_hint]
     assert writers == ["garmin_download_activity"]
 
 
@@ -57,7 +57,8 @@ def test_tool_returns_garmin_data(client):
 
 
 def test_list_results_are_wrapped_so_empty_ones_still_render(client):
-    [content] = asyncio.run(server.mcp.call_tool("garmin_search_activities", {}))
+    result = asyncio.run(server.mcp.call_tool("garmin_search_activities", {}))
+    [content] = result.content
     assert json.loads(content.text) == {"results": []}
 
 

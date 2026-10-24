@@ -22,6 +22,9 @@ All notable changes to this project are documented here. The format follows
 - `server.json` adds a website link and the logo as an icon, and PyPI gets
   Homepage and Documentation links and more search keywords. These reach the
   Registry and PyPI with the next release.
+- Runs on version 2 of the MCP Python SDK (`mcp>=2.3,<3`), where `FastMCP` is
+  now `MCPServer`. Tools, their annotations, and the stdio and `--http`
+  transports behave as before.
 
 ## [0.1.1] - 2026-10-22
 
