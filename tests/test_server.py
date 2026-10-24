@@ -81,7 +81,8 @@ def test_search_rejects_a_partial_bounding_box(client):
     assert client.calls == []
 
 
-def test_download_defaults_to_the_configured_directory(client, monkeypatch, tmp_path):
+@pytest.fixture
+def saved(client, monkeypatch, tmp_path):
     monkeypatch.setenv("GARMIN_MCP_DOWNLOAD_DIR", str(tmp_path / "fits"))
     saved = {}
 
@@ -90,5 +91,46 @@ def test_download_defaults_to_the_configured_directory(client, monkeypatch, tmp_
         return {}
 
     monkeypatch.setattr(activities, "download_activity", fake_download)
+    return saved
+
+
+def test_download_defaults_to_the_configured_directory(saved, tmp_path):
     asyncio.run(server.garmin_download_activity(123))
     assert saved["directory"] == tmp_path / "fits"
+
+
+def test_download_saves_in_a_subfolder_of_the_configured_directory(saved, tmp_path):
+    asyncio.run(server.garmin_download_activity(123, directory="races/2026"))
+    assert saved["directory"] == (tmp_path / "fits" / "races" / "2026").resolve()
+
+
+def test_download_accepts_an_absolute_path_inside_the_configured_directory(
+    saved, tmp_path
+):
+    inside = tmp_path / "fits" / "races"
+    asyncio.run(server.garmin_download_activity(123, directory=str(inside)))
+    assert saved["directory"] == inside.resolve()
+
+
+@pytest.mark.parametrize("directory", ["..", "races/../../elsewhere", "/"])
+def test_download_rejects_a_directory_outside_the_configured_one(saved, directory):
+    with pytest.raises(ValueError, match="GARMIN_MCP_DOWNLOAD_DIR"):
+        asyncio.run(server.garmin_download_activity(123, directory=directory))
+    assert saved == {}
+
+
+def test_download_rejects_an_absolute_path_outside_the_configured_one(saved, tmp_path):
+    with pytest.raises(ValueError, match="must be inside"):
+        asyncio.run(
+            server.garmin_download_activity(123, directory=str(tmp_path / "other"))
+        )
+    assert saved == {}
+
+
+def test_download_rejects_a_symlink_that_leads_outside(saved, tmp_path):
+    (tmp_path / "fits").mkdir()
+    (tmp_path / "outside").mkdir()
+    (tmp_path / "fits" / "escape").symlink_to(tmp_path / "outside")
+    with pytest.raises(ValueError, match="must be inside"):
+        asyncio.run(server.garmin_download_activity(123, directory="escape"))
+    assert saved == {}

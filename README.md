@@ -206,7 +206,7 @@ DNS-rebinding check accepts its Host header.
 | Variable | Purpose | Default |
 | --- | --- | --- |
 | `GARMIN_PERSONAL_API_KEY` | Personal API key; overrides the saved key file | – |
-| `GARMIN_MCP_DOWNLOAD_DIR` | Where `garmin_download_activity` saves files | `~/Downloads/garmin` (platform downloads dir) |
+| `GARMIN_MCP_DOWNLOAD_DIR` | Where `garmin_download_activity` saves files; the tool can't write outside it | `~/Downloads/garmin` (platform downloads dir) |
 
 ## Troubleshooting
 
