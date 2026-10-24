@@ -17,3 +17,16 @@ def download_dir() -> Path:
     if configured:
         return Path(configured).expanduser()
     return Path(platformdirs.user_downloads_dir()) / "garmin"
+
+
+def download_target(directory: str | None) -> Path:
+    base = download_dir()
+    if directory is None:
+        return base
+    target = (base / Path(directory).expanduser()).resolve()
+    if not target.is_relative_to(base.resolve()):
+        raise ValueError(
+            f"directory must be inside {base}; pass a subfolder name such as "
+            f"'races', or set {DOWNLOAD_DIR_ENV_VAR} to change the download folder"
+        )
+    return target

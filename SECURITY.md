@@ -10,7 +10,8 @@ Issues in the following areas are in scope:
   tool output, cache files).
 - The HTTP transport (`--http`): anything that weakens the documented
   "localhost-only, no built-in auth" posture.
-- `garmin_download_activity` writing outside the directory it was given.
+- `garmin_download_activity` writing outside the download folder
+  (`GARMIN_MCP_DOWNLOAD_DIR`, else `~/Downloads/garmin`).
 - Dependency vulnerabilities that are reachable through this package.
 
 Out of scope: Garmin's own services and its Personal API.
