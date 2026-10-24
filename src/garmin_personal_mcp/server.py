@@ -1,7 +1,6 @@
 import asyncio
 import datetime
 from collections.abc import Callable
-from pathlib import Path
 from typing import Any, Literal
 
 from mcp.server.fastmcp import FastMCP
@@ -455,12 +454,12 @@ async def garmin_download_activity(
     saved path, size, and the files inside.
 
     activity_id: activityId from garmin_search_activities.
-    directory: where to save (default: GARMIN_MCP_DOWNLOAD_DIR, else a garmin
-    folder in the Downloads directory).
+    directory: a subfolder of the download folder to save in, e.g. "races"
+    (default: the download folder itself). The download folder is
+    GARMIN_MCP_DOWNLOAD_DIR, else a garmin folder in the Downloads directory;
+    paths that lead outside it are rejected.
     """
-    target = config.download_dir()
-    if directory is not None:
-        target = Path(directory).expanduser()
+    target = config.download_target(directory)
     return await fetch(lambda c: activities.download_activity(c, activity_id, target))
 
 

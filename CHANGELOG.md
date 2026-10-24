@@ -8,6 +8,13 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- `garmin_download_activity` only saves inside the download folder
+  (`GARMIN_MCP_DOWNLOAD_DIR`, else `~/Downloads/garmin`). Its `directory`
+  argument now picks a subfolder of it, such as `races`, and a path that leads
+  outside it (an absolute path elsewhere, `..`, or a symlink) is rejected, so a
+  confused or prompt-injected model can't write files elsewhere on your
+  machine. If you saved downloads somewhere else, set
+  `GARMIN_MCP_DOWNLOAD_DIR` to that folder.
 - The README opens with what the server is, who it's for, and that it's free,
   and the project is called Garmin Personal MCP everywhere, including the MCP
   Registry title (was "Garmin Connect"), so directories and search engines
