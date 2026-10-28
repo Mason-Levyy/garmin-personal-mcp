@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-28
+
 ### Added
 
 - A Docker image, `ghcr.io/mason-levyy/garmin-personal-mcp`, for amd64 and
@@ -22,7 +24,8 @@ All notable changes to this project are documented here. The format follows
   outside it (an absolute path elsewhere, `..`, or a symlink) is rejected, so a
   confused or prompt-injected model can't write files elsewhere on your
   machine. If you saved downloads somewhere else, set
-  `GARMIN_MCP_DOWNLOAD_DIR` to that folder.
+  `GARMIN_MCP_DOWNLOAD_DIR` to that folder. To keep the old behavior for now,
+  pin `garmin-personal-mcp==0.1.1`.
 - The README opens with what the server is, who it's for, and that it's free,
   and the project is called Garmin Personal MCP everywhere, including the MCP
   Registry title (was "Garmin Connect"), so directories and search engines
@@ -69,6 +72,7 @@ All notable changes to this project are documented here. The format follows
 - Streamable HTTP transport (`--http`), with `--allowed-host` for running
   behind a reverse proxy.
 
-[Unreleased]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Mason-Levyy/garmin-personal-mcp/releases/tag/v0.1.0
