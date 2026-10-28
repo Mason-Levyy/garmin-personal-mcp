@@ -77,10 +77,12 @@ def main() -> None:
     if not args.http:
         mcp.run()
         return
-    mcp.settings.host = args.host
-    mcp.settings.port = args.port
-    mcp.settings.transport_security = transport_security(args.allowed_host)
-    mcp.run(transport="streamable-http")
+    mcp.run(
+        transport="streamable-http",
+        host=args.host,
+        port=args.port,
+        transport_security=transport_security(args.allowed_host),
+    )
 
 
 if __name__ == "__main__":

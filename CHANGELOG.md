@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Require version 2 of the MCP Python SDK (`mcp>=2.3,<3`) instead of version 1.
+
 ## [0.2.0] - 2026-10-28
 
 ### Added
