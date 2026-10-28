@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A Dockerfile and dedicated workflow that builds pull requests and publishes
+  amd64/arm64 images to GitHub Container Registry on pushes to `main`, plus
+  versioned images from the release workflow.
+- A Docker Compose example for localhost HTTP with persistent authentication
+  and activity downloads.
+
 ### Changed
 
 - `garmin_download_activity` only saves inside the download folder

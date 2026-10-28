@@ -43,8 +43,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "v${{ steps.version.outputs.version }}" \
+            --target "$GITHUB_SHA" \
             --title "v${{ steps.version.outputs.version }}" \
             --generate-notes
+
+  docker:
+    needs: [tag-release]
+    if: always() && (github.event_name == 'release' || needs.tag-release.outputs.created == 'true')
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker.yml
+    with:
+      release_tag: ${{ github.event_name == 'push' && format('v{0}', needs.tag-release.outputs.version) || github.event.release.tag_name }}
 
   publish:
     needs: [tag-release]
