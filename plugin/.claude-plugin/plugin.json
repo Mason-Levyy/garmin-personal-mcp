@@ -1,7 +1,7 @@
 {
   "name": "garmin-personal-mcp",
   "displayName": "Garmin Personal MCP",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Ask Claude about your Garmin Connect data (sleep, HRV, Body Battery, stress, activities, weight) through Garmin's official, read-only Personal API.",
   "author": {
     "name": "Mason Levy",
