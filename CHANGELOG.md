@@ -8,11 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- A Dockerfile and dedicated workflow that builds pull requests and publishes
-  amd64/arm64 images to GitHub Container Registry on pushes to `main`, plus
-  versioned images from the release workflow.
-- A Docker Compose example for localhost HTTP with persistent authentication
-  and activity downloads.
+- A Docker image, `ghcr.io/mason-levyy/garmin-personal-mcp`, for amd64 and
+  arm64, published with each release as `X.Y.Z` and `latest`, after the same
+  version is on PyPI.
+- A Docker Compose example for localhost HTTP with a persistent key and
+  activity downloads in `./downloads`.
 
 ### Changed
 
