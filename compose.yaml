@@ -8,9 +8,8 @@ services:
       - "127.0.0.1:8491:8491"
     volumes:
       - garmin-config:/home/garmin/.config/garmin
-      - garmin-downloads:/home/garmin/Downloads/garmin
+      - ./downloads:/home/garmin/Downloads/garmin
     restart: unless-stopped
 
 volumes:
   garmin-config:
-  garmin-downloads:

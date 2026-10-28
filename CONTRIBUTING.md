@@ -116,19 +116,23 @@ fails if they drift), move the
 `main`. The publish workflow tags `vX.Y.Z`, creates a GitHub release, publishes
 to PyPI via trusted publishing, and pushes to the MCP Registry.
 
-Docker images are published separately by `.github/workflows/docker.yml` on
-every push to `main`, using the built-in `GITHUB_TOKEN`. The image name is
-`ghcr.io/<owner>/<repository>` in lowercase, so forks publish to their own
-namespace. `latest` tracks `main`; `sha-<full-commit-sha>` identifies the source
-commit. Pull requests build the image without logging in or publishing.
+The Docker image is published only from releases. After PyPI and the MCP
+Registry succeed, `publish.yml` calls `.github/workflows/docker.yml` with the
+release tag. That workflow builds the image, checks that `--version` matches
+`pyproject.toml`, and pushes amd64 and arm64 images tagged `X.Y.Z` and
+`latest`, using the built-in `GITHUB_TOKEN`. The tag must match the package
+version. The direct call is needed because releases created with
+`GITHUB_TOKEN` don't trigger other workflows. If the Docker job fails, re-run
+it from the Publish run once the cause is fixed; PyPI is already done.
 
-For releases, `publish.yml` calls the same Docker workflow with the release
-tag. It publishes `X.Y.Z` and the source commit's SHA tag from `vX.Y.Z`,
-without moving `latest`. This handles both automatic version bumps and
-manually published releases; the tag must match the package version. The
-direct call is needed because releases created with `GITHUB_TOKEN` do not
-trigger another release workflow. Docker and PyPI publishing run independently
-after the release is created.
+The image name is `ghcr.io/<owner>/<repository>` in lowercase, so forks
+publish to their own namespace. Pull requests that touch the Dockerfile,
+`.dockerignore`, `pyproject.toml`, or the Docker workflow build an amd64 image
+and run the same version check without publishing.
+
+The container paths (`/home/garmin/.config/garmin`,
+`/home/garmin/Downloads/garmin`), uid 1000, and the entrypoint are public
+surface for Docker users, like CLI flags. Keep them stable.
 
 After the first publish, make the package public in GitHub's package settings
 to allow pulls without authentication; [new GHCR packages default to
