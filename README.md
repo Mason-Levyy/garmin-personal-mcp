@@ -165,19 +165,34 @@ services:
       - "127.0.0.1:8491:8491"
     volumes:
       - garmin-config:/home/garmin/.config/garmin
-      - garmin-downloads:/home/garmin/Downloads/garmin
+      - ./downloads:/home/garmin/Downloads/garmin
     restart: unless-stopped
 
 volumes:
   garmin-config:
-  garmin-downloads:
 ```
 
-From the directory containing `compose.yaml`, pull the image:
+`latest` is the newest release, the same version PyPI serves. To stay on one
+version, use a version tag such as `:0.2.0` instead.
+
+From the directory containing `compose.yaml`, create the downloads folder and
+pull the image:
 
 ```bash
+mkdir -p downloads
 docker compose pull
 ```
+
+Activity files from `garmin_download_activity` land in `./downloads`. The tool
+reports the path inside the container (`/home/garmin/Downloads/garmin/...`),
+which is the same file. The container runs as uid 1000, so on Linux, if your
+uid isn't 1000, run `sudo chown 1000 downloads`.
+
+Don't mount an existing `~/.config/garmin` from the host into the container.
+The key file there is readable only by its owner, so the container can't read
+it unless your uid is 1000. Use one of the options below instead.
+
+The container paths above and uid 1000 stay the same across releases.
 
 ### Authentication
 
@@ -210,8 +225,19 @@ docker compose up -d
 ```
 
 In your MCP client, add a **Streamable HTTP** server with the URL
-`http://127.0.0.1:8491/mcp`. For clients on other machines, see
-[Remote / HTTP mode](#remote--http-mode) for VPN and authenticated proxy setup.
+`http://127.0.0.1:8491/mcp`.
+
+The server only accepts requests addressed to `127.0.0.1` or `localhost`, and
+it has no authentication. To reach it from another machine, keep the port on
+`127.0.0.1`, put an authenticating proxy or tailnet in front (see
+[Remote / HTTP mode](#remote--http-mode)), and add the hostname clients use to
+`command`:
+
+```yaml
+    command: ["--http", "--host", "0.0.0.0", "--allowed-host", "garmin.example.ts.net"]
+```
+
+Without `--allowed-host`, requests to any other hostname are rejected.
 
 ### Build from source
 

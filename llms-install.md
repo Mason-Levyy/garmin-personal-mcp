@@ -77,4 +77,7 @@ mentioning `garmin-personal-mcp auth` means step 2 didn't complete: run
 
 - `GARMIN_PERSONAL_API_KEY`: the key itself, instead of the saved file. Mark it
   secret in the client config.
-- `GARMIN_MCP_DOWNLOAD_DIR`: where `garmin_download_activity` saves files.
+- `GARMIN_MCP_DOWNLOAD_DIR`: where `garmin_download_activity` saves files
+  (default `~/Downloads/garmin`). The tool can't write outside this folder; its
+  `directory` argument only picks a subfolder. If the user wants downloads
+  somewhere else, set this variable rather than passing an outside path.

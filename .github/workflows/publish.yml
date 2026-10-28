@@ -47,16 +47,6 @@ jobs:
             --title "v${{ steps.version.outputs.version }}" \
             --generate-notes
 
-  docker:
-    needs: [tag-release]
-    if: always() && (github.event_name == 'release' || needs.tag-release.outputs.created == 'true')
-    permissions:
-      contents: read
-      packages: write
-    uses: ./.github/workflows/docker.yml
-    with:
-      release_tag: ${{ github.event_name == 'push' && format('v{0}', needs.tag-release.outputs.version) || github.event.release.tag_name }}
-
   publish:
     needs: [tag-release]
     if: always() && (github.event_name == 'release' || needs.tag-release.outputs.created == 'true')
@@ -97,3 +87,13 @@ jobs:
         run: |
           ./mcp-publisher login github-oidc
           ./mcp-publisher publish
+
+  docker:
+    needs: [tag-release, publish]
+    if: always() && needs.publish.result == 'success'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker.yml
+    with:
+      release_tag: ${{ github.event_name == 'push' && format('v{0}', needs.tag-release.outputs.version) || github.event.release.tag_name }}

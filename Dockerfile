@@ -10,10 +10,11 @@ COPY pyproject.toml README.md LICENSE ./
 COPY src/ ./src/
 
 RUN uv pip install --system --no-cache . \
-    && useradd --create-home --home-dir /home/garmin --shell /usr/sbin/nologin garmin \
+    && useradd --uid 1000 --create-home --home-dir /home/garmin --shell /usr/sbin/nologin garmin \
     && install -d -o garmin -g garmin /home/garmin/.config/garmin /home/garmin/Downloads/garmin
 
-ENV HOME=/home/garmin
+ENV HOME=/home/garmin \
+    GARMIN_MCP_DOWNLOAD_DIR=/home/garmin/Downloads/garmin
 USER garmin
 
 ENTRYPOINT ["garmin-personal-mcp"]

@@ -14,3 +14,4 @@ uv.lock
 .mypy_cache/
 .ruff_cache/
 .venv*/
+/downloads/

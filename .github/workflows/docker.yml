@@ -1,13 +1,16 @@
 name: Docker
 
 on:
-  push:
-    branches: [main]
   pull_request:
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - pyproject.toml
+      - .github/workflows/docker.yml
   workflow_call:
     inputs:
       release_tag:
-        description: Release tag to build, such as v0.1.2
+        description: Release tag to build, such as v0.2.0
         required: true
         type: string
 
@@ -15,8 +18,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-docker-${{ inputs.release_tag || github.ref }}
-  cancel-in-progress: true
+  group: docker-${{ inputs.release_tag || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -29,42 +32,66 @@ jobs:
         with:
           ref: ${{ inputs.release_tag || github.sha }}
 
-      - name: Set image tags
+      - name: Read image name and version
         id: image
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           image=$(printf 'ghcr.io/%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
-          revision=$(git rev-parse HEAD)
-          if [ -n "$RELEASE_TAG" ]; then
-            version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
-            test "$RELEASE_TAG" = "v$version"
-            tag="$version"
-          else
-            tag=latest
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          if [ -n "$RELEASE_TAG" ] && [ "$RELEASE_TAG" != "v$version" ]; then
+            echo "::error::Release tag $RELEASE_TAG does not match pyproject.toml version $version"
+            exit 1
           fi
-          echo "revision=$revision" >> "$GITHUB_OUTPUT"
-          echo "tags=$image:$tag,$image:sha-$revision" >> "$GITHUB_OUTPUT"
+          echo "name=$image" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - uses: docker/setup-qemu-action@v4
       - uses: docker/setup-buildx-action@v4
 
+      - name: Build image for smoke test
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          tags: garmin-personal-mcp:smoke
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test
+        env:
+          VERSION: ${{ steps.image.outputs.version }}
+        run: |
+          reported=$(docker run --rm garmin-personal-mcp:smoke --version)
+          if [ "$reported" != "$VERSION" ]; then
+            echo "::error::Image reports version '$reported', expected '$VERSION'"
+            exit 1
+          fi
+
+      - if: inputs.release_tag
+        uses: docker/setup-qemu-action@v4
+
       - name: Log in to GitHub Container Registry
-        if: github.event_name != 'pull_request'
+        if: inputs.release_tag
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and publish image
+      - name: Publish image
+        if: inputs.release_tag
         uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.image.outputs.tags }}
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:${{ steps.image.outputs.version }}
+            ${{ steps.image.outputs.name }}:latest
+          cache-from: type=gha
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ steps.image.outputs.revision }}
+            org.opencontainers.image.version=${{ steps.image.outputs.version }}
             org.opencontainers.image.licenses=MIT
