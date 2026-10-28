@@ -1,4 +1,5 @@
 import stat
+import sys
 
 import pytest
 
@@ -44,10 +45,16 @@ def pipe(monkeypatch, text):
     monkeypatch.setattr(auth.getpass, "getpass", no_prompt)
 
 
-def test_save_key_is_owner_only():
+def test_save_key_writes_inside_the_test_home(isolated_home):
     path = auth.save_key("secret")
     assert path == config.key_file()
+    assert path.is_relative_to(isolated_home)
     assert path.read_text() == "secret\n"
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="Windows has no POSIX file modes")
+def test_save_key_is_owner_only():
+    path = auth.save_key("secret")
     assert stat.S_IMODE(path.stat().st_mode) == 0o600
 
 

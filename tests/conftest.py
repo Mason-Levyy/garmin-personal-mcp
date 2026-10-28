@@ -46,6 +46,7 @@ class FakeClient:
 def isolated_home(tmp_path, monkeypatch):
     """Keeps key files and the bearer-token cache away from the real home."""
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
     monkeypatch.delenv("GARMIN_PERSONAL_API_KEY", raising=False)
     monkeypatch.delenv("GARMIN_MCP_DOWNLOAD_DIR", raising=False)
     return tmp_path

@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import json
+import sys
 
 import pytest
 from conftest import FakeClient
@@ -127,10 +128,20 @@ def test_download_rejects_an_absolute_path_outside_the_configured_one(saved, tmp
     assert saved == {}
 
 
+def link_directory(link, target):
+    if sys.platform == "win32":
+        # Junctions behave like directory symlinks but don't need admin rights.
+        import _winapi
+
+        _winapi.CreateJunction(str(target), str(link))
+        return
+    link.symlink_to(target)
+
+
 def test_download_rejects_a_symlink_that_leads_outside(saved, tmp_path):
     (tmp_path / "fits").mkdir()
     (tmp_path / "outside").mkdir()
-    (tmp_path / "fits" / "escape").symlink_to(tmp_path / "outside")
+    link_directory(tmp_path / "fits" / "escape", tmp_path / "outside")
     with pytest.raises(ValueError, match="must be inside"):
         asyncio.run(server.garmin_download_activity(123, directory="escape"))
     assert saved == {}
