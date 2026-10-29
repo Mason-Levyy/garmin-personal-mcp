@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-02
+
 ### Added
 
 - The Docker image is listed in the MCP Registry next to the PyPI package, so
@@ -17,6 +19,8 @@ All notable changes to this project are documented here. The format follows
 - A failed Garmin request still reaches the model with its reason under SDK 2,
   plus what to do next: wait and retry when rate limited, try later on a
   Garmin server error, check the connection when Garmin can't be reached.
+- If another package in the same environment still needs MCP SDK 1.x, pin
+  `garmin-personal-mcp==0.2.0` until it supports version 2.
 
 ## [0.2.0] - 2026-10-28
 
@@ -84,7 +88,8 @@ All notable changes to this project are documented here. The format follows
 - Streamable HTTP transport (`--http`), with `--allowed-host` for running
   behind a reverse proxy.
 
-[Unreleased]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/Mason-Levyy/garmin-personal-mcp/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Mason-Levyy/garmin-personal-mcp/releases/tag/v0.1.0
