@@ -1,6 +1,6 @@
 [project]
 name = "garmin-personal-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "MCP server for Garmin Connect on Garmin's official Personal API: sleep, HRV, body battery, activities, and more from any MCP client"
 readme = "README.md"
 requires-python = ">=3.12"
