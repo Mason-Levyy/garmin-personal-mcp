@@ -80,14 +80,6 @@ jobs:
           echo "timed out waiting for PyPI"
           exit 1
 
-      - name: Install mcp-publisher
-        run: curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
-
-      - name: Publish to the MCP Registry
-        run: |
-          ./mcp-publisher login github-oidc
-          ./mcp-publisher publish
-
   docker:
     needs: [tag-release, publish]
     if: always() && needs.publish.result == 'success'
@@ -97,3 +89,23 @@ jobs:
     uses: ./.github/workflows/docker.yml
     with:
       release_tag: ${{ github.event_name == 'push' && format('v{0}', needs.tag-release.outputs.version) || github.event.release.tag_name }}
+
+  registry:
+    needs: [tag-release, docker]
+    if: always() && needs.docker.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'push' && format('v{0}', needs.tag-release.outputs.version) || github.ref }}
+
+      - name: Install mcp-publisher
+        run: curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Publish to the MCP Registry
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
