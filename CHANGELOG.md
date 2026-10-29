@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The Docker image is listed in the MCP Registry next to the PyPI package, so
+  clients that install from the Registry can choose to run it in a container.
+
 ## [0.2.0] - 2026-10-28
 
 ### Added
