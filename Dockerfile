@@ -1,5 +1,7 @@
 FROM python:3.12-slim
 
+LABEL io.modelcontextprotocol.server.name="io.github.Mason-Levyy/garmin-personal-mcp"
+
 COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /usr/local/bin/uv
 
 ENV PYTHONUNBUFFERED=1 \

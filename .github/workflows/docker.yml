@@ -67,6 +67,12 @@ jobs:
             echo "::error::Image reports version '$reported', expected '$VERSION'"
             exit 1
           fi
+          label=$(docker inspect --format '{{ index .Config.Labels "io.modelcontextprotocol.server.name" }}' garmin-personal-mcp:smoke)
+          expected=$(python3 -c "import json; print(json.load(open('server.json'))['name'])")
+          if [ "$label" != "$expected" ]; then
+            echo "::error::Image label io.modelcontextprotocol.server.name is '$label', but server.json names '$expected'. The MCP Registry rejects the image without a match."
+            exit 1
+          fi
 
       - if: inputs.release_tag
         uses: docker/setup-qemu-action@v4
