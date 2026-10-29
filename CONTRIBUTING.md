@@ -109,21 +109,28 @@ profile pk, ids, and personal data first.
 ## Releasing (maintainers)
 
 Releases are cut automatically. Bump `version` in `pyproject.toml`, the two
-version fields in `server.json`, `version` in `plugin/.claude-plugin/plugin.json`,
-and the `garmin-personal-mcp==X.Y.Z` pin in `plugin/.mcp.json` together (CI
-fails if they drift), move the
+version fields and the OCI image tag in `server.json`, `version` in
+`plugin/.claude-plugin/plugin.json`, and the `garmin-personal-mcp==X.Y.Z` pin
+in `plugin/.mcp.json` together (CI fails if they drift), move the
 **Unreleased** section of `CHANGELOG.md` under the new version, and merge to
 `main`. The publish workflow tags `vX.Y.Z`, creates a GitHub release, publishes
-to PyPI via trusted publishing, and pushes to the MCP Registry.
+to PyPI via trusted publishing, pushes the Docker image, and then publishes
+`server.json` to the MCP Registry.
 
-The Docker image is published only from releases. After PyPI and the MCP
-Registry succeed, `publish.yml` calls `.github/workflows/docker.yml` with the
-release tag. That workflow builds the image, checks that `--version` matches
-`pyproject.toml`, and pushes amd64 and arm64 images tagged `X.Y.Z` and
-`latest`, using the built-in `GITHUB_TOKEN`. The tag must match the package
-version. The direct call is needed because releases created with
-`GITHUB_TOKEN` don't trigger other workflows. If the Docker job fails, re-run
-it from the Publish run once the cause is fixed; PyPI is already done.
+The Docker image is published only from releases. After PyPI succeeds,
+`publish.yml` calls `.github/workflows/docker.yml` with the release tag. That
+workflow builds the image, checks that `--version` matches `pyproject.toml`
+and that the `io.modelcontextprotocol.server.name` label matches
+`server.json`, and pushes amd64 and arm64 images tagged `X.Y.Z` and `latest`,
+using the built-in `GITHUB_TOKEN`. The tag must match the package version. The
+direct call is needed because releases created with `GITHUB_TOKEN` don't
+trigger other workflows. If the Docker job fails, re-run it from the Publish
+run once the cause is fixed; PyPI is already done.
+
+The MCP Registry lists both the PyPI package and the image, and it checks that
+each exists when `server.json` is published, so the Registry job runs only
+after the image push succeeds. If it fails, re-run it from the same Publish
+run.
 
 The image name is `ghcr.io/<owner>/<repository>` in lowercase, so forks
 publish to their own namespace. Pull requests that touch the Dockerfile,
