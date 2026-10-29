@@ -2,7 +2,7 @@ import asyncio
 import json
 import sys
 
-from conftest import FakeClient
+from conftest import FakeClient, http_error
 from mcp import Client, StdioServerParameters
 from mcp.server.mcpserver import MCPServer
 from starlette.testclient import TestClient
@@ -100,6 +100,22 @@ def test_client_receives_data_and_expected_errors(monkeypatch, tmp_path):
             result = await client.call_tool("garmin_get_profile", {})
             assert result.is_error
             assert garmin_client.RECONNECT_HINT in result.content[0].text
+
+            def rate_limited(op):
+                raise http_error(429)
+
+            monkeypatch.setattr(garmin_client, "call", rate_limited)
+            result = await client.call_tool("garmin_get_hrv", {})
+            assert result.is_error
+            assert "returned HTTP 429: nope" in result.content[0].text
+
+            def unreachable(op):
+                raise ConnectionError("Garmin is unreachable")
+
+            monkeypatch.setattr(garmin_client, "call", unreachable)
+            result = await client.call_tool("garmin_get_hrv", {})
+            assert result.is_error
+            assert "Garmin is unreachable" in result.content[0].text
 
             def unexpected_error(op):
                 raise RuntimeError("private diagnostic")

@@ -3,6 +3,7 @@ import datetime
 from collections.abc import Callable
 from typing import Any, Literal
 
+from garmin_personal_api import HttpError
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
@@ -73,9 +74,12 @@ def parse_range(
 async def fetch(op: Callable[[Any], Any]) -> dict:
     """MCP clients render a bare list as one content block per item, so an
     empty list would reach the model as nothing at all."""
+    # The SDK hides any other exception's message from the client, and a model
+    # needs these (HTTP status, unreachable host, unwritable download) to explain
+    # the failure. requests' network errors subclass OSError.
     try:
         result = await asyncio.to_thread(garmin_client.call, op)
-    except garmin_client.ApiKeyError as exc:
+    except (garmin_client.ApiKeyError, HttpError, OSError) as exc:
         raise ToolError(str(exc)) from exc
     if result is None:
         return NO_DATA
