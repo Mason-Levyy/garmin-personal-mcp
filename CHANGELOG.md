@@ -6,6 +6,32 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Docker: `compose.yaml` passes `TZ` through, and the Registry's Docker
+  package lists it, so tools that default to today can use your date instead
+  of UTC's. Set `TZ` (e.g. `TZ=America/Los_Angeles` in `.env`). Without it,
+  the container stays on UTC as before.
+- MCP clients now see the server's version, title, and website in
+  `serverInfo` (the version was empty). The server name is still `garmin`.
+
+### Changed
+
+- `garmin_search_activities` describes how its dates default (neither: all
+  dates; only `end`: the 7 days ending on it; only `start`: through today),
+  and `garmin_get_day` says an empty section comes back as `null` or `[]`.
+  Behavior is unchanged, but models read these descriptions, so they may
+  pass dates differently.
+
+### Fixed
+
+- `garmin_download_activity` no longer saves a file when Garmin's response
+  isn't a ZIP, which would have replaced an earlier good download. It now
+  tells the model why nothing was saved instead of a bare "Error executing
+  tool".
+- A `start` after today with no `end` no longer suggests swapping an `end`
+  that wasn't passed.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added
