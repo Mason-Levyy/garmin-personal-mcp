@@ -3,6 +3,7 @@ import io
 import zipfile
 
 import pytest
+from garmin_personal_api import GarminPersonalApiError
 
 from garmin_personal_mcp import activities
 
@@ -120,3 +121,10 @@ def test_download_saves_zip_and_lists_contents(client, tmp_path):
         "bytes": len(buffer.getvalue()),
         "files": ["123_ACTIVITY.fit"],
     }
+
+
+def test_download_that_is_not_a_zip_saves_nothing(client, tmp_path):
+    client.downloads[123] = b"<html>maintenance</html>"
+    with pytest.raises(GarminPersonalApiError, match="wasn't a ZIP"):
+        activities.download_activity(client, 123, tmp_path / "garmin")
+    assert not (tmp_path / "garmin").exists()

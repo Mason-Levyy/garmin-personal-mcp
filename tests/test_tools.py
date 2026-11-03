@@ -5,6 +5,7 @@ import zipfile
 
 import pytest
 from conftest import FakeClient, load_fixture
+from mcp import Client
 
 from garmin_personal_mcp import garmin_client, server
 
@@ -294,3 +295,20 @@ def test_download_saves_the_requested_activity_in_the_requested_folder(
     saved = (tmp_path / "races" / "activity-123.zip").resolve()
     assert saved.read_bytes() == buffer.getvalue()
     assert result["path"] == str(saved)
+
+
+def test_download_that_is_not_a_zip_tells_the_model_why(garmin, monkeypatch, tmp_path):
+    monkeypatch.setenv("GARMIN_MCP_DOWNLOAD_DIR", str(tmp_path))
+    garmin.downloads[123] = b"<html>maintenance</html>"
+
+    async def download():
+        async with Client(server.mcp) as client:
+            return await client.call_tool(DOWNLOAD_TOOL, {"activity_id": 123})
+
+    result = asyncio.run(download())
+
+    assert result.is_error
+    assert "wasn't a ZIP file (24 bytes), so nothing was saved" in (
+        result.content[0].text
+    )
+    assert not (tmp_path / "activity-123.zip").exists()
