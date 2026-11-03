@@ -3,7 +3,8 @@ import datetime
 from collections.abc import Callable
 from typing import Any, Literal
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
 
 from . import (
@@ -21,11 +22,14 @@ from . import (
     womens_health,
 )
 
-mcp = FastMCP("garmin")
+mcp = MCPServer("garmin")
 
-READS_GARMIN = ToolAnnotations(readOnlyHint=True, openWorldHint=True)
+READS_GARMIN = ToolAnnotations(read_only_hint=True, open_world_hint=True)
 SAVES_LOCAL_FILE = ToolAnnotations(
-    readOnlyHint=False, destructiveHint=False, idempotentHint=True, openWorldHint=True
+    read_only_hint=False,
+    destructive_hint=False,
+    idempotent_hint=True,
+    open_world_hint=True,
 )
 
 DEFAULT_SPAN_DAYS = 7
@@ -35,13 +39,21 @@ NO_DATA = {
 }
 
 
+class UserInputError(ValueError, ToolError):
+    pass
+
+
+class ToolActivitySearchError(activities.ActivitySearchError, ToolError):
+    pass
+
+
 def parse_day(value: str | None) -> datetime.date:
     if value is None:
         return datetime.date.today()
     try:
         return datetime.date.fromisoformat(value)
     except ValueError:
-        raise ValueError(f"dates must be YYYY-MM-DD, got {value!r}") from None
+        raise UserInputError(f"dates must be YYYY-MM-DD, got {value!r}") from None
 
 
 def parse_range(
@@ -52,7 +64,7 @@ def parse_range(
         return end_day - datetime.timedelta(days=DEFAULT_SPAN_DAYS - 1), end_day
     start_day = parse_day(start)
     if start_day > end_day:
-        raise ValueError(
+        raise UserInputError(
             f"start ({start_day}) must be on or before end ({end_day}); swap them"
         )
     return start_day, end_day
@@ -61,7 +73,10 @@ def parse_range(
 async def fetch(op: Callable[[Any], Any]) -> dict:
     """MCP clients render a bare list as one content block per item, so an
     empty list would reach the model as nothing at all."""
-    result = await asyncio.to_thread(garmin_client.call, op)
+    try:
+        result = await asyncio.to_thread(garmin_client.call, op)
+    except garmin_client.ApiKeyError as exc:
+        raise ToolError(str(exc)) from exc
     if result is None:
         return NO_DATA
     if isinstance(result, list):
@@ -389,6 +404,10 @@ async def garmin_search_activities(
     first, last = None, None
     if start is not None or end is not None:
         first, last = parse_range(start, end)
+    try:
+        start_area = activities.bounding_box(north, south, east, west)
+    except activities.ActivitySearchError as exc:
+        raise ToolActivitySearchError(str(exc)) from exc
     filters = activities.ActivitySearch(
         start=first,
         end=last,
@@ -410,7 +429,7 @@ async def garmin_search_activities(
         min_elevation=min_elevation,
         max_elevation=max_elevation,
         min_avg_power=min_avg_power,
-        start_area=activities.bounding_box(north, south, east, west),
+        start_area=start_area,
         min_max_depth=min_max_depth,
         max_max_depth=max_max_depth,
         deco_dive=deco_dive,
@@ -459,7 +478,10 @@ async def garmin_download_activity(
     GARMIN_MCP_DOWNLOAD_DIR, else a garmin folder in the Downloads directory;
     paths that lead outside it are rejected.
     """
-    target = config.download_target(directory)
+    try:
+        target = config.download_target(directory)
+    except ValueError as exc:
+        raise UserInputError(str(exc)) from exc
     return await fetch(lambda c: activities.download_activity(c, activity_id, target))
 
 
