@@ -161,6 +161,7 @@ services:
     command: ["--http", "--host", "0.0.0.0"]
     environment:
       - GARMIN_PERSONAL_API_KEY
+      - TZ
     ports:
       - "127.0.0.1:8491:8491"
     volumes:
@@ -193,6 +194,15 @@ The key file there is readable only by its owner, so the container can't read
 it unless your uid is 1000. Use one of the options below instead.
 
 The container paths above and uid 1000 stay the same across releases.
+
+The container runs on UTC unless you set `TZ`, and tools that default to
+today use the container's date. In the evening west of UTC that's already
+tomorrow, and in the morning east of it, still yesterday. Add your time zone
+to `.env` (or your shell) so "today" matches your day:
+
+```dotenv
+TZ=America/Los_Angeles
+```
 
 ### Authentication
 
