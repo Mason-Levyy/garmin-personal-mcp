@@ -42,6 +42,22 @@
           "format": "string"
         }
       ]
+    },
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/mason-levyy/garmin-personal-mcp:0.2.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GARMIN_PERSONAL_API_KEY",
+          "description": "Garmin Connect Personal API key, from Garmin Connect under Settings, Personal API",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
     }
   ]
 }
