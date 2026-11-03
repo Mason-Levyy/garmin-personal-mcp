@@ -93,7 +93,7 @@ The package is `src/garmin_personal_mcp/`. A tool call flows top to bottom:
   every user's model calls the tools, so treat that as a user-facing change
   too (see below).
 - **Dependency pins are deliberate.** `garmin-connect-personal-api-python`
-  stays below 2 and `mcp` below 2 until someone has tested a new major against
+  stays below 2 and `mcp` below 3 until someone has tested a new major against
   a real account.
 
 ## Protect existing users
