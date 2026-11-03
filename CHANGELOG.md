@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- MCP clients now see the server's version, title, and website in
+  `serverInfo` (the version was empty). The server name is still `garmin`.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added
