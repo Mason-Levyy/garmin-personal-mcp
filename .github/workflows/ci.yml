@@ -46,10 +46,12 @@ jobs:
           plugin = json.load(open('plugin/.claude-plugin/plugin.json'))
           plugin_args = json.load(open('plugin/.mcp.json'))['mcpServers']['garmin']['args']
           pinned = plugin_args[0].split('==')[1]
+          packages = {package['registryType']: package for package in server['packages']}
           found = {
               'pyproject.toml': pyproject_version,
               'server.json version': server['version'],
-              'server.json packages[0].version': server['packages'][0]['version'],
+              'server.json pypi package version': packages['pypi']['version'],
+              'server.json oci image tag': packages['oci']['identifier'].rsplit(':', 1)[1],
               'plugin/.claude-plugin/plugin.json': plugin['version'],
               'plugin/.mcp.json pin': pinned,
           }

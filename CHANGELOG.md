@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The Docker image is listed in the MCP Registry next to the PyPI package, so
+  clients that install from the Registry can choose to run it in a container.
+
 ### Changed
 
 - Require version 2 of the MCP Python SDK (`mcp>=2.3,<3`) instead of version 1.
