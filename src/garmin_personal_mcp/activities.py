@@ -4,6 +4,8 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from garmin_personal_api import GarminPersonalApiError
+
 from .garmin_api import query
 
 
@@ -125,6 +127,11 @@ def get_activity_workouts(client, activity_id: int) -> list | None:
 
 def download_activity(client, activity_id: int, directory: Path) -> dict:
     content = client.download_activity(activity_id)
+    if not zipfile.is_zipfile(io.BytesIO(content)):
+        raise GarminPersonalApiError(
+            f"Garmin's response for activity {activity_id} wasn't a ZIP file "
+            f"({len(content)} bytes), so nothing was saved. Try again later."
+        )
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / f"activity-{activity_id}.zip"
     path.write_bytes(content)
