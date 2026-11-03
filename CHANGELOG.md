@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `garmin_download_activity` no longer saves a file when Garmin's response
+  isn't a ZIP, which would have replaced an earlier good download. It now
+  tells the model why nothing was saved instead of a bare "Error executing
+  tool".
+
 ## [0.3.0] - 2026-11-02
 
 ### Added
