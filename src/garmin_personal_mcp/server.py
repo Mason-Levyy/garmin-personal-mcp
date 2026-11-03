@@ -3,6 +3,7 @@ import datetime
 from collections.abc import Callable
 from typing import Any, Literal
 
+from garmin_personal_api import GarminPersonalApiError
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
@@ -33,6 +34,8 @@ SAVES_LOCAL_FILE = ToolAnnotations(
 )
 
 DEFAULT_SPAN_DAYS = 7
+TOO_MANY_REQUESTS = 429
+FIRST_SERVER_ERROR = 500
 NO_DATA = {
     "no_data": "Garmin returned nothing for this request: nothing was recorded "
     "for that date yet, or your device doesn't measure it."
@@ -70,6 +73,15 @@ def parse_range(
     return start_day, end_day
 
 
+def garmin_error_message(exc: GarminPersonalApiError) -> str:
+    status = getattr(exc, "status_code", None)
+    if status == TOO_MANY_REQUESTS:
+        return f"{exc}. Garmin is rate limiting requests; wait a minute and retry."
+    if status is not None and status >= FIRST_SERVER_ERROR:
+        return f"{exc}. Garmin's servers had a problem; try again later."
+    return str(exc)
+
+
 async def fetch(op: Callable[[Any], Any]) -> dict:
     """MCP clients render a bare list as one content block per item, so an
     empty list would reach the model as nothing at all."""
@@ -77,6 +89,17 @@ async def fetch(op: Callable[[Any], Any]) -> dict:
         result = await asyncio.to_thread(garmin_client.call, op)
     except garmin_client.ApiKeyError as exc:
         raise ToolError(str(exc)) from exc
+    except GarminPersonalApiError as exc:
+        raise ToolError(garmin_error_message(exc)) from exc
+    # A local file error (saving a download) names the file; requests'
+    # connection errors and timeouts subclass OSError without one.
+    except OSError as exc:
+        if exc.filename is not None:
+            raise ToolError(f"Couldn't save {exc.filename}: {exc.strerror}") from exc
+        raise ToolError(
+            f"Couldn't reach Garmin ({type(exc).__name__}). "
+            f"{garmin_client.UNREACHABLE_HINT}"
+        ) from exc
     if result is None:
         return NO_DATA
     if isinstance(result, list):

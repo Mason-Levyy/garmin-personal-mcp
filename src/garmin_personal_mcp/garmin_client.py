@@ -13,6 +13,7 @@ RECONNECT_HINT = (
     f"Create a key at {KEY_PAGE} and run `garmin-personal-mcp auth` "
     "(or set GARMIN_PERSONAL_API_KEY)."
 )
+UNREACHABLE_HINT = "Check your internet connection or proxy, then try again."
 UNAUTHORIZED = 401
 KEY_REJECTED_STATUSES = {400, 401, 403}
 

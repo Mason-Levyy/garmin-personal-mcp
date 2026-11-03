@@ -2,7 +2,9 @@ import asyncio
 import json
 import sys
 
+import requests
 from conftest import FakeClient
+from garmin_personal_api import HttpError
 from mcp import Client, StdioServerParameters
 from mcp.server.mcpserver import MCPServer
 from starlette.testclient import TestClient
@@ -108,5 +110,48 @@ def test_client_receives_data_and_expected_errors(monkeypatch, tmp_path):
             result = await client.call_tool("garmin_get_profile", {})
             assert result.is_error
             assert "private diagnostic" not in result.content[0].text
+
+    asyncio.run(exercise())
+
+
+def test_client_sees_why_garmin_requests_failed(monkeypatch):
+    def failing_with(exc):
+        def call(op):
+            raise exc
+
+        return call
+
+    def http_error(status, text):
+        return HttpError(
+            status_code=status,
+            method="GET",
+            url="https://apis.garmin.com/wellness-api/rest/hrv",
+            response_text=text,
+        )
+
+    cases = [
+        (http_error(429, "rate limited"), ["returned HTTP 429: rate limited", "wait"]),
+        (http_error(503, ""), ["returned HTTP 503", "try again later"]),
+        (http_error(404, "not found"), ["returned HTTP 404: not found"]),
+        (
+            requests.ConnectionError("connection refused"),
+            ["Couldn't reach Garmin (ConnectionError)", "internet connection"],
+        ),
+        (
+            PermissionError(13, "Permission denied", "/downloads/activity-1.zip"),
+            ["Couldn't save /downloads/activity-1.zip: Permission denied"],
+        ),
+    ]
+
+    async def exercise():
+        async with Client(server.mcp) as client:
+            for exc, expected in cases:
+                monkeypatch.setattr(garmin_client, "call", failing_with(exc))
+                result = await client.call_tool("garmin_get_hrv", {})
+                assert result.is_error
+                text = result.content[0].text
+                for fragment in expected:
+                    assert fragment in text
+                assert "Personal API key" not in text
 
     asyncio.run(exercise())

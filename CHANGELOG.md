@@ -9,6 +9,9 @@ All notable changes to this project are documented here. The format follows
 ### Changed
 
 - Require version 2 of the MCP Python SDK (`mcp>=2.3,<3`) instead of version 1.
+- A failed Garmin request still reaches the model with its reason under SDK 2,
+  plus what to do next: wait and retry when rate limited, try later on a
+  Garmin server error, check the connection when Garmin can't be reached.
 
 ## [0.2.0] - 2026-10-28
 
