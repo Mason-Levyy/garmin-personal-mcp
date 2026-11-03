@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- `garmin_search_activities` describes how its dates default (neither: all
+  dates; only `end`: the 7 days ending on it; only `start`: through today),
+  and `garmin_get_day` says an empty section comes back as `null` or `[]`.
+  Behavior is unchanged, but models read these descriptions, so they may
+  pass dates differently.
+
+### Fixed
+
+- A `start` after today with no `end` no longer suggests swapping an `end`
+  that wasn't passed.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added

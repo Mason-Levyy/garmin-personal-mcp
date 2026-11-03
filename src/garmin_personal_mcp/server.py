@@ -66,11 +66,16 @@ def parse_range(
     if start is None:
         return end_day - datetime.timedelta(days=DEFAULT_SPAN_DAYS - 1), end_day
     start_day = parse_day(start)
-    if start_day > end_day:
+    if start_day <= end_day:
+        return start_day, end_day
+    if end is None:
         raise UserInputError(
-            f"start ({start_day}) must be on or before end ({end_day}); swap them"
+            f"start ({start_day}) is after today ({end_day}), which end defaults "
+            "to; pass an earlier start, or an end on or after it"
         )
-    return start_day, end_day
+    raise UserInputError(
+        f"start ({start_day}) must be on or before end ({end_day}); swap them"
+    )
 
 
 def garmin_error_message(exc: GarminPersonalApiError) -> str:
@@ -111,8 +116,9 @@ async def fetch(op: Callable[[Any], Any]) -> dict:
 async def garmin_get_day(date: str | None = None) -> dict:
     """One day at a glance: daily summary (steps, calories, intensity minutes,
     resting HR, stress, body battery), last night's sleep, HRV, body battery,
-    stress, and the day's activities. A section Garmin has no data for yet
-    comes back as {"error": ...} while the rest still load.
+    stress, and the day's activities. A section Garmin has no data for comes
+    back as null or [], or as {"error": ...} when Garmin rejects that
+    section's request; the other sections still load.
 
     date: YYYY-MM-DD (default: today).
     """
@@ -403,7 +409,9 @@ async def garmin_search_activities(
     activityId to garmin_get_activity for splits and full detail.
 
     All filters are optional and combine:
-    start, end: YYYY-MM-DD, by the activity's local start date.
+    start, end: YYYY-MM-DD inclusive, by the activity's local start date.
+    Omit both to search all dates. With only end, the search covers the 7
+    days ending on it; with only start, it runs through today.
     search: text in the activity name or description.
     activity_type: parent type key, e.g. running, cycling, swimming,
     strength_training, hiking, walking. activity_subtype: a child key such as
