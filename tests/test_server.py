@@ -35,6 +35,13 @@ def test_parse_range_rejects_an_inverted_range():
         server.parse_range("2026-10-22", "2026-10-21")
 
 
+def test_parse_range_explains_a_future_start_without_an_end():
+    tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
+    with pytest.raises(ValueError, match="which end defaults to") as error:
+        server.parse_range(tomorrow, None)
+    assert "swap" not in str(error.value)
+
+
 def test_every_endpoint_has_a_tool():
     assert len(tools()) == 26
 

@@ -15,8 +15,18 @@ All notable changes to this project are documented here. The format follows
   of UTC's. Set `TZ` (e.g. `TZ=America/Los_Angeles` in `.env`). Without it,
   the container stays on UTC as before.
 
+### Changed
+
+- `garmin_search_activities` describes how its dates default (neither: all
+  dates; only `end`: the 7 days ending on it; only `start`: through today),
+  and `garmin_get_day` says an empty section comes back as `null` or `[]`.
+  Behavior is unchanged, but models read these descriptions, so they may
+  pass dates differently.
+
 ### Fixed
 
+- A `start` after today with no `end` no longer suggests swapping an `end`
+  that wasn't passed.
 - `garmin_download_activity` no longer saves a file when Garmin's response
   isn't a ZIP, which would have replaced an earlier good download. It now
   tells the model why nothing was saved instead of a bare "Error executing
