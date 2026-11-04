@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Docker: `compose.yaml` passes `TZ` through, and the Registry's Docker
+  package lists it, so tools that default to today can use your date instead
+  of UTC's. Set `TZ` (e.g. `TZ=America/Los_Angeles` in `.env`). Without it,
+  the container stays on UTC as before.
+
 ### Fixed
 
 - `garmin_download_activity` no longer saves a file when Garmin's response
