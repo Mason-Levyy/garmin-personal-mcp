@@ -155,3 +155,23 @@ def test_client_sees_why_garmin_requests_failed(monkeypatch):
                 assert "Personal API key" not in text
 
     asyncio.run(exercise())
+
+
+def test_download_that_is_not_a_zip_tells_the_client_why(monkeypatch, tmp_path):
+    fake = FakeClient()
+    fake.downloads[123] = b"<html>maintenance</html>"
+    monkeypatch.setattr(garmin_client, "call", lambda op: op(fake))
+    monkeypatch.setenv("GARMIN_MCP_DOWNLOAD_DIR", str(tmp_path))
+
+    async def exercise():
+        async with Client(server.mcp) as client:
+            return await client.call_tool(
+                "garmin_download_activity", {"activity_id": 123}
+            )
+
+    result = asyncio.run(exercise())
+    assert result.is_error
+    assert "wasn't a ZIP file (24 bytes), so nothing was saved" in (
+        result.content[0].text
+    )
+    assert not (tmp_path / "activity-123.zip").exists()
