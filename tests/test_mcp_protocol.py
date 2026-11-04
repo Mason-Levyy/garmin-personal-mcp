@@ -9,7 +9,17 @@ from mcp import Client, StdioServerParameters
 from mcp.server.mcpserver import MCPServer
 from starlette.testclient import TestClient
 
-from garmin_personal_mcp import cli, garmin_client, server
+from garmin_personal_mcp import __version__, cli, garmin_client, server
+
+
+def test_server_reports_the_package_version():
+    async def exercise():
+        async with Client(server.mcp) as client:
+            info = client.server_info
+            assert info.name == "garmin"
+            assert info.version == __version__
+
+    asyncio.run(exercise())
 
 
 def test_stdio_lists_tools_and_returns_input_errors():

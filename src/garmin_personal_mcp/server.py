@@ -9,6 +9,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
 
 from . import (
+    __version__,
     activities,
     config,
     daily_summary,
@@ -23,7 +24,12 @@ from . import (
     womens_health,
 )
 
-mcp = MCPServer("garmin")
+mcp = MCPServer(
+    "garmin",
+    title="Garmin Personal MCP",
+    version=__version__,
+    website_url="https://github.com/Mason-Levyy/garmin-personal-mcp",
+)
 
 READS_GARMIN = ToolAnnotations(read_only_hint=True, open_world_hint=True)
 SAVES_LOCAL_FILE = ToolAnnotations(
