@@ -56,6 +56,12 @@
           "isRequired": true,
           "isSecret": true,
           "format": "string"
+        },
+        {
+          "name": "TZ",
+          "description": "Your time zone, e.g. America/Los_Angeles, so tools that default to today use your date (the container otherwise runs on UTC)",
+          "isRequired": false,
+          "format": "string"
         }
       ]
     }
