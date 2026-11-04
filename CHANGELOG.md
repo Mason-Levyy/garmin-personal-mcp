@@ -8,6 +8,8 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- MCP clients now see the server's version, title, and website in
+  `serverInfo` (the version was empty). The server name is still `garmin`.
 - Docker: `compose.yaml` passes `TZ` through, and the Registry's Docker
   package lists it, so tools that default to today can use your date instead
   of UTC's. Set `TZ` (e.g. `TZ=America/Los_Angeles` in `.env`). Without it,
