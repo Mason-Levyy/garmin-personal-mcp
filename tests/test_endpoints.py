@@ -142,6 +142,23 @@ def test_daily_summaries_tolerate_empty_pages(client):
     assert daily_summary.get_daily_summaries(client, *WEEK) == {"data": []}
 
 
+def test_vo2_max_splits_at_366_days():
+    client = FakeClient({"maxmet": []})
+    profile.get_vo2_max(client, D(2025, 1, 1), D(2026, 1, 1), sport=["RUNNING"])
+    assert [(path, params) for path, params in client.calls] == [
+        (
+            "/metrics-service/metrics/maxmet/daily/2025-01-01/2026-01-01",
+            {"sport": ["RUNNING"]},
+        ),
+    ]
+    client.calls.clear()
+    profile.get_vo2_max(client, D(2025, 1, 1), D(2026, 1, 2))
+    assert [path for path, _ in client.calls] == [
+        "/metrics-service/metrics/maxmet/daily/2025-01-01/2026-01-01",
+        "/metrics-service/metrics/maxmet/daily/2026-01-02/2026-01-02",
+    ]
+
+
 def test_sleep_summaries_split_at_31_days():
     client = FakeClient({"dailySleepSummaries": []})
     sleep.get_sleep_summaries(client, D(2026, 1, 1), D(2026, 2, 1))

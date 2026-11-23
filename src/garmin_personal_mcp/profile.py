@@ -1,6 +1,10 @@
 import datetime
 
-from .garmin_api import query
+from .garmin_api import in_windows, query
+
+# Not in the Swagger reference: measured against a real account on 2026-11-23
+# (367 days answered, 368 gave an empty HTTP 400).
+VO2_MAX_MAX_DAYS = 366
 
 
 def get_settings(client) -> dict | None:
@@ -16,11 +20,14 @@ def get_heart_rate_zones(client, *, generate_defaults: bool = True) -> list | No
 
 def get_vo2_max(
     client, start: datetime.date, end: datetime.date, *, sport: list[str] | None = None
-) -> list | None:
-    return client.get(
-        f"/metrics-service/metrics/maxmet/daily/{start}/{end}",
-        params=query(sport=sport),
-    )
+) -> list:
+    def fetch(first, last):
+        return client.get(
+            f"/metrics-service/metrics/maxmet/daily/{first}/{last}",
+            params=query(sport=sport),
+        )
+
+    return in_windows(start, end, VO2_MAX_MAX_DAYS, fetch)
 
 
 def get_fitness_age(
