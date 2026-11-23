@@ -2,8 +2,7 @@ import datetime
 
 from .garmin_api import in_windows, query
 
-# Not in the Swagger reference: measured against a real account on 2026-11-23
-# (367 days answered, 368 gave an empty HTTP 400).
+# Garmin's limit for this endpoint; it isn't in the Swagger reference.
 VO2_MAX_MAX_DAYS = 366
 
 

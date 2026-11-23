@@ -547,12 +547,8 @@ async def garmin_get_vo2_max(
     start: str | None = None, end: str | None = None, sport: list[str] | None = None
 ) -> dict:
     """Daily VO2 Max values across a date range, for trends in aerobic fitness.
-    Each row has a `generic` section and, when Garmin has one, a `cycling` or
-    `rowing` section, each with calendarDate, vo2MaxValue, and
-    vo2MaxPreciseValue.
 
-    start, end: YYYY-MM-DD inclusive (default: the 7 days ending today). Any
-    length works; long ranges are fetched 366 days at a time.
+    start, end: YYYY-MM-DD inclusive (default: the 7 days ending today).
     sport: only these sports, as upper-case sport names, e.g. ["RUNNING"] or
     ["CYCLING", "ROWING"] (default: all).
     """

@@ -52,7 +52,7 @@ The package is `src/garmin_personal_mcp/`. A tool call flows top to bottom:
   (usersummary-service), `wellness.py` (Body Battery, heart rate, SpO2,
   wellness activities), `sleep.py`, `hrv.py`, `weight.py`, `nutrition.py`,
   `activities.py` (search, detail, workouts, file download), `profile.py`
-  (settings, heart rate zones, fitness age), and `womens_health.py`. Each
+  (settings, heart rate zones, fitness age, VO2 Max), and `womens_health.py`. Each
   function takes the client first. `day.py` composes several of them into the
   one-day overview.
 - `garmin_api.py` holds the request plumbing they share: `query` (parameter
