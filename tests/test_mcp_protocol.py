@@ -29,7 +29,7 @@ def test_stdio_lists_tools_and_returns_input_errors():
         )
         async with Client(params) as client:
             tools = (await client.list_tools()).tools
-            assert len(tools) == 26
+            assert len(tools) == 27
             for tool in tools:
                 annotations = tool.annotations
                 assert annotations.open_world_hint is True

@@ -295,6 +295,7 @@ today. Tools that return a list wrap it as `{"results": [...]}`.
 | `garmin_download_activity` | Save an activity's original file (ZIP with the .fit) on the server's machine |
 | `garmin_get_profile` | Units, formats, time zone, and training-day preferences |
 | `garmin_get_heart_rate_zones` | Zone floors per sport and the HRs they're based on |
+| `garmin_get_vo2_max` | Daily VO2 Max across a range, optionally for chosen sports |
 | `garmin_get_fitness_age` | Fitness age, achievable fitness age, and its components |
 | `garmin_get_menstrual_cycle` | Cycle phase, day, fertile window, and predictions |
 | `garmin_get_menstrual_day` | One day's logged symptoms, flow, and cycle detail |

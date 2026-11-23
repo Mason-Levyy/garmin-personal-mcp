@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `garmin_get_vo2_max`: daily VO2 Max across a date range, optionally filtered
+  by sport (the `/metrics-service/metrics/maxmet/daily` endpoint, which had no
+  tool yet).
 - MCP clients now see the server's version, title, and website in
   `serverInfo` (the version was empty). The server name is still `garmin`.
 - Docker: `compose.yaml` passes `TZ` through, and the Registry's Docker

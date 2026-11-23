@@ -71,6 +71,16 @@ SINGLE_REQUEST_CASES = [
         {"generateDefaults": "false"},
     ),
     (
+        lambda c: profile.get_vo2_max(c, *WEEK),
+        "/metrics-service/metrics/maxmet/daily/2026-10-14/2026-10-20",
+        {},
+    ),
+    (
+        lambda c: profile.get_vo2_max(c, *WEEK, sport=["RUNNING", "CYCLING"]),
+        "/metrics-service/metrics/maxmet/daily/2026-10-14/2026-10-20",
+        {"sport": ["RUNNING", "CYCLING"]},
+    ),
+    (
         lambda c: profile.get_fitness_age(c, DAY),
         "/fitnessage-service/fitnessage/v2/2026-10-20",
         {"fullHistoryScan": "true"},

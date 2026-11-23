@@ -14,6 +14,15 @@ def get_heart_rate_zones(client, *, generate_defaults: bool = True) -> list | No
     )
 
 
+def get_vo2_max(
+    client, start: datetime.date, end: datetime.date, *, sport: list[str] | None = None
+) -> list | None:
+    return client.get(
+        f"/metrics-service/metrics/maxmet/daily/{start}/{end}",
+        params=query(sport=sport),
+    )
+
+
 def get_fitness_age(
     client, day: datetime.date, *, full_history_scan: bool = True
 ) -> list | None:
