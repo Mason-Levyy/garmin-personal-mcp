@@ -1,6 +1,9 @@
 import datetime
 
-from .garmin_api import query
+from .garmin_api import in_windows, query
+
+# Garmin's limit for this endpoint; it isn't in the Swagger reference.
+VO2_MAX_MAX_DAYS = 366
 
 
 def get_settings(client) -> dict | None:
@@ -12,6 +15,18 @@ def get_heart_rate_zones(client, *, generate_defaults: bool = True) -> list | No
         "/biometric-service/heartRateZones/v2",
         params=query(generateDefaults=generate_defaults),
     )
+
+
+def get_vo2_max(
+    client, start: datetime.date, end: datetime.date, *, sport: list[str] | None = None
+) -> list:
+    def fetch(first, last):
+        return client.get(
+            f"/metrics-service/metrics/maxmet/daily/{first}/{last}",
+            params=query(sport=sport),
+        )
+
+    return in_windows(start, end, VO2_MAX_MAX_DAYS, fetch)
 
 
 def get_fitness_age(

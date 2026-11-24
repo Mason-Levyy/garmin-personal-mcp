@@ -542,6 +542,20 @@ async def garmin_get_heart_rate_zones(generate_defaults: bool = True) -> dict:
     )
 
 
+@mcp.tool(title="Get VO2 Max", annotations=READS_GARMIN)
+async def garmin_get_vo2_max(
+    start: str | None = None, end: str | None = None, sport: list[str] | None = None
+) -> dict:
+    """Daily VO2 Max values across a date range, for trends in aerobic fitness.
+
+    start, end: YYYY-MM-DD inclusive (default: the 7 days ending today).
+    sport: only these sports, as upper-case sport names, e.g. ["RUNNING"] or
+    ["CYCLING", "ROWING"] (default: all).
+    """
+    first, last = parse_range(start, end)
+    return await fetch(lambda c: profile.get_vo2_max(c, first, last, sport=sport))
+
+
 @mcp.tool(title="Get fitness age", annotations=READS_GARMIN)
 async def garmin_get_fitness_age(
     date: str | None = None, full_history_scan: bool = True
