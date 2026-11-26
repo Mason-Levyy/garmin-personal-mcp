@@ -117,6 +117,10 @@ def search_activities(
     )
 
 
+def get_activity_types(client) -> list | None:
+    return client.get("/activity-service/activity/activityTypes/simple")
+
+
 def get_activity(client, activity_id: int) -> dict | None:
     return client.get(f"/activity-service/activity/{activity_id}")
 

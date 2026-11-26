@@ -12,6 +12,11 @@ All notable changes to this project are documented here. The format follows
   by sport (the `/metrics-service/metrics/maxmet/daily` endpoint, which had no
   tool yet). Ranges longer than 366 days, the most Garmin accepts per request,
   are split into several requests.
+- `garmin_get_activity_types`: every activity type key and its parent key
+  (the `/activity-service/activity/activityTypes/simple` endpoint, which had
+  no tool yet), so a model can use valid `activity_type` and
+  `activity_subtype` filters in `garmin_search_activities`, whose description
+  now points to it.
 - MCP clients now see the server's version, title, and website in
   `serverInfo` (the version was empty). The server name is still `garmin`.
 - Docker: `compose.yaml` passes `TZ` through, and the Registry's Docker

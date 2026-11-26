@@ -422,7 +422,7 @@ async def garmin_search_activities(
     activity_type: parent type key, e.g. running, cycling, swimming,
     strength_training, hiking, walking. activity_subtype: a child key such as
     trail_running or indoor_cycling. excluded_activity_subtypes: child keys to
-    leave out.
+    leave out. garmin_get_activity_types lists every key.
     event_type: race, training, recreation, fitness, specialEvent, or
     uncategorized. favorite: true for favorites only, false for non-favorites.
     exclude_children: hide individual legs of multisport activities.
@@ -477,6 +477,13 @@ async def garmin_search_activities(
     return await fetch(
         lambda c: activities.search_activities(c, filters, limit=limit, offset=offset)
     )
+
+
+@mcp.tool(title="Get activity types", annotations=READS_GARMIN)
+async def garmin_get_activity_types() -> dict:
+    """Every activity type key and its parent key: the valid values for the
+    activity_type and activity_subtype filters of garmin_search_activities."""
+    return await fetch(activities.get_activity_types)
 
 
 @mcp.tool(title="Get activity", annotations=READS_GARMIN)

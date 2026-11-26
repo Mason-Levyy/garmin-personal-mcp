@@ -43,7 +43,7 @@ def test_parse_range_explains_a_future_start_without_an_end():
 
 
 def test_every_endpoint_has_a_tool():
-    assert len(tools()) == 27
+    assert len(tools()) == 28
 
 
 def test_tools_are_read_only_except_the_local_download():
