@@ -290,6 +290,7 @@ today. Tools that return a list wrap it as `{"results": [...]}`.
 | `garmin_get_weight_goals` | Weight goals in effect and their target ranges |
 | `garmin_get_food_log` | Garmin Connect nutrition log: foods, nutrients, goals, meals |
 | `garmin_search_activities` | Activities with every filter Garmin supports (type, dates, distance, power, area, dives, ...) |
+| `garmin_get_activity_types` | Every activity type and subtype key, for the search filters |
 | `garmin_get_activity` | One activity in full, with splits |
 | `garmin_get_activity_workouts` | The structured workout followed during an activity |
 | `garmin_download_activity` | Save an activity's original file (ZIP with the .fit) on the server's machine |

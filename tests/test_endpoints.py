@@ -4,6 +4,7 @@ import pytest
 from conftest import FakeClient, load_fixture
 
 from garmin_personal_mcp import (
+    activities,
     daily_summary,
     hrv,
     nutrition,
@@ -59,6 +60,11 @@ SINGLE_REQUEST_CASES = [
             "includeNutrition": "true",
             "includeMedia": "false",
         },
+    ),
+    (
+        lambda c: activities.get_activity_types(c),
+        "/activity-service/activity/activityTypes/simple",
+        None,
     ),
     (
         lambda c: profile.get_settings(c),
